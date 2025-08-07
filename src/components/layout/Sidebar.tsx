@@ -21,13 +21,13 @@ const menuItems = [
     href: "/admin/dashboard",
     icon: LayoutDashboard,
     label: "Dashboard",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/permohonan",
     icon: FileText,
     label: "Permohonan",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]
   },
   {
     href: "/admin/informasi",
@@ -39,7 +39,7 @@ const menuItems = [
     href: "/admin/keberatan",
     icon: AlertTriangle,
     label: "Keberatan",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]
   },
   {
     href: "/admin/halaman",
@@ -63,7 +63,7 @@ const menuItems = [
     href: "/admin/profile",
     icon: User,
     label: "Profile",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/pengaturan",
@@ -89,7 +89,8 @@ const Sidebar = () => {
         <h2 className="text-xl font-bold text-gray-800">{getRoleDisplayName(userRole)}</h2>
         <p className="text-sm text-gray-600">
           {userRole === 'PPID' ? 'PPID Utama' : 
-           userRole === 'Atasan_PPID' ? 'PPID Pelaksana' : 
+           userRole === 'PPID_Pelaksana' ? 'PPID Pelaksana' :
+           userRole === 'Atasan_PPID' ? 'Atasan PPID' : 
            'Administrator'} - Diskominfo Garut
         </p>
       </div>

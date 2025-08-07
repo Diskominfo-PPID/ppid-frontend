@@ -30,9 +30,17 @@ export default function AdminAkunPage() {
       id: 2,
       nama: "PPID Pelaksana",
       email: "ppid.pelaksana@ppid-garut.go.id",
-      role: "Atasan_PPID",
+      role: "PPID_Pelaksana",
       status: "Aktif",
       tanggal_dibuat: "2024-01-02"
+    },
+    {
+      id: 4,
+      nama: "Atasan PPID",
+      email: "atasan.ppid@ppid-garut.go.id",
+      role: "Atasan_PPID",
+      status: "Aktif",
+      tanggal_dibuat: "2024-01-03"
     },
     {
       id: 3,
@@ -106,7 +114,8 @@ export default function AdminAkunPage() {
     switch (role) {
       case 'Admin': return 'bg-red-100 text-red-800';
       case 'PPID': return 'bg-blue-100 text-blue-800';
-      case 'Atasan_PPID': return 'bg-green-100 text-green-800';
+      case 'PPID_Pelaksana': return 'bg-green-100 text-green-800';
+      case 'Atasan_PPID': return 'bg-purple-100 text-purple-800';
       case 'Pemohon': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -161,7 +170,8 @@ export default function AdminAkunPage() {
                 >
                   <option value="Pemohon">Pemohon</option>
                   <option value="PPID">PPID Utama</option>
-                  <option value="Atasan_PPID">PPID Pelaksana</option>
+                  <option value="PPID_Pelaksana">PPID Pelaksana</option>
+                  <option value="Atasan_PPID">Atasan PPID (Monitoring)</option>
                 </select>
               </div>
               

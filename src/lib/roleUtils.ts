@@ -1,6 +1,7 @@
 export const ROLES = {
   ADMIN: "Admin",
   PPID: "PPID", 
+  PPID_PELAKSANA: "PPID_Pelaksana",
   ATASAN_PPID: "Atasan_PPID",
   PEMOHON: "Pemohon"
 } as const;
@@ -24,7 +25,7 @@ export const isPemohon = (role: string | null): boolean => {
 };
 
 export const isAdminRole = (role: string | null): boolean => {
-  return [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID].includes(role as UserRole);
+  return [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA, ROLES.ATASAN_PPID].includes(role as UserRole);
 };
 
 export const canAccessMenu = (role: string | null, menuRoles: string[]): boolean => {
@@ -36,7 +37,9 @@ export const getRoleDisplayName = (role: string | null): string => {
     case ROLES.ADMIN:
       return "Administrator";
     case ROLES.PPID:
-      return "PPID";
+      return "PPID Utama";
+    case ROLES.PPID_PELAKSANA:
+      return "PPID Pelaksana";
     case ROLES.ATASAN_PPID:
       return "Atasan PPID";
     case ROLES.PEMOHON:

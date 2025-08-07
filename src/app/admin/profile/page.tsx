@@ -31,7 +31,7 @@ export default function ProfilePage() {
           nip: "198502022010012002",
           jabatan: "Pejabat Pengelola Informasi dan Dokumentasi Utama"
         };
-      case 'Atasan_PPID':
+      case 'PPID_Pelaksana':
         return {
           nama: "PPID Pelaksana",
           email: "ppid.pelaksana@ppid-garut.go.id",
@@ -40,6 +40,16 @@ export default function ProfilePage() {
           foto: "/default-avatar.png",
           nip: "198503032010013003",
           jabatan: "Pejabat Pengelola Informasi dan Dokumentasi Pelaksana"
+        };
+      case 'Atasan_PPID':
+        return {
+          nama: "Atasan PPID",
+          email: "atasan.ppid@ppid-garut.go.id",
+          telepon: "0262-123459",
+          alamat: "Jl. Pembangunan No. 1, Garut",
+          foto: "/default-avatar.png",
+          nip: "198504042010014004",
+          jabatan: "Atasan Pejabat Pengelola Informasi dan Dokumentasi"
         };
       default:
         return {
