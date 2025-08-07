@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
@@ -46,6 +46,11 @@ export default function AdminInformasiPage() {
       files: []
     }
   ]);
+  
+  // Save to localStorage on component mount and updates
+  useEffect(() => {
+    localStorage.setItem('informasi_data', JSON.stringify(informasi));
+  }, [informasi]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ 

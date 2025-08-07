@@ -37,7 +37,7 @@ export const useRealtimeData = () => {
   const chartData = {
     monthly: generateMonthlyData(requests),
     daily: generateDailyData(requests),
-    category: generateCategoryData(requests),
+    category: generateCategoryData(),
     status: generateStatusData(requests)
   };
 

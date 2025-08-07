@@ -71,12 +71,15 @@ export const generateDailyData = (requests: RequestData[]) => {
   });
 };
 
-// Generate category data from actual requests
-export const generateCategoryData = (requests: RequestData[]) => {
-  const categoryCounts = requests.reduce((acc, req) => {
-    acc[req.kategori] = (acc[req.kategori] || 0) + 1;
+// Generate category data from localStorage informasi
+export const generateCategoryData = () => {
+  const savedInformasi = typeof window !== 'undefined' ? localStorage.getItem('informasi_data') : null;
+  const informasiData = savedInformasi ? JSON.parse(savedInformasi) : [];
+  
+  const categoryCounts = informasiData.reduce((acc: Record<string, number>, item: any) => {
+    acc[item.kategori] = (acc[item.kategori] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {});
   
   return kategoris.map(kategori => ({
     label: kategori,
