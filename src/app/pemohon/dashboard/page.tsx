@@ -96,6 +96,7 @@ export default function PemohonDashboardPage() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Informasi</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -109,6 +110,11 @@ export default function PemohonDashboardPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.tanggal}</td>
+                  <td className="px-6 py-4 text-sm">
+                    <button className="text-blue-600 hover:text-blue-900 text-xs">
+                      Detail
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
