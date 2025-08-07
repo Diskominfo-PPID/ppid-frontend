@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { ROLES, getRoleDisplayName, canAccessMenu } from "@/lib/roleUtils";
 import { 
   LayoutDashboard, 
   FileText, 
@@ -15,47 +17,54 @@ const menuItems = [
   {
     href: "/admin/dashboard",
     icon: LayoutDashboard,
-    label: "Dashboard"
+    label: "Dashboard",
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/permohonan",
     icon: FileText,
-    label: "Permohonan"
+    label: "Permohonan",
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/informasi",
     icon: Users,
-    label: "Informasi"
+    label: "Informasi",
+    roles: [ROLES.ADMIN, ROLES.PPID]
   },
   {
     href: "/admin/laporan",
     icon: BarChart3,
-    label: "Laporan"
+    label: "Laporan",
+    roles: [ROLES.ADMIN, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/pengaturan",
     icon: Settings,
-    label: "Pengaturan"
+    label: "Pengaturan",
+    roles: [ROLES.ADMIN]
   }
 ];
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const { logout, getUserRole } = useAuth();
+  const userRole = getUserRole();
+  const visibleMenuItems = menuItems.filter(item => canAccessMenu(userRole, item.roles));
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token");
-    window.location.href = "/login";
+    logout();
   };
 
   return (
     <div className="w-64 bg-white shadow-lg">
       <div className="p-6">
-        <h2 className="text-xl font-bold text-gray-800">Admin PPID</h2>
+        <h2 className="text-xl font-bold text-gray-800">{getRoleDisplayName(userRole)}</h2>
         <p className="text-sm text-gray-600">Diskominfo Garut</p>
       </div>
       
       <nav className="mt-6">
-        {menuItems.map((item) => {
+        {visibleMenuItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
           

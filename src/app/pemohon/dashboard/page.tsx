@@ -37,7 +37,7 @@ export default function PemohonDashboardPage() {
   };
 
   return (
-    <div className="p-8">
+    <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard Pemohon</h1>
         <Link href="/permohonan">

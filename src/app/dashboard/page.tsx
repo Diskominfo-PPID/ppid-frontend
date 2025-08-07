@@ -1,33 +1,39 @@
 "use client";
 
-"use client";
-
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { isAdminRole, isPemohon } from "@/lib/roleUtils";
 
 export default function DashboardPage() {
-  const { token } = useAuth();
+  const { token, loading, getUserRole } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!token) {
-      router.push("/login");
-      return;
-    }
+    if (!loading) {
+      if (!token) {
+        router.replace("/login");
+        return;
+      }
 
-    const userRole = localStorage.getItem("user_role");
-    
-    if (userRole === "Admin" || userRole === "PPID" || userRole === "Atasan_PPID") {
-      router.push("/admin/dashboard");
-    } else if (userRole === "Pemohon") {
-      router.push("/pemohon/dashboard");
+      const userRole = getUserRole();
+      
+      // Redirect berdasarkan role
+      if (isAdminRole(userRole)) {
+        router.replace("/admin/dashboard");
+      } else if (isPemohon(userRole)) {
+        router.replace("/pemohon/dashboard");
+      } else {
+        // Role tidak dikenali, logout
+        localStorage.clear();
+        router.replace("/login");
+      }
     }
-  }, [token, router]);
+  }, [token, loading, router, getUserRole]);
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="text-lg">Redirecting...</div>
+      <div className="text-lg">Loading...</div>
     </div>
   );
 }

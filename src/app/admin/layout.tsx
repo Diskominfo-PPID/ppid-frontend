@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { isAdminRole } from "@/lib/roleUtils";
 import Sidebar from "@/components/layout/Sidebar";
 
 export default function AdminLayout({
@@ -10,19 +11,39 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, loading } = useAuth();
+  const { token, loading, getUserRole } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Jika loading selesai dan tidak ada token, redirect ke halaman login
-    if (!loading && !token) {
-      router.push("/login");
+    if (!loading) {
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+      
+      const userRole = getUserRole();
+      if (!isAdminRole(userRole)) {
+        router.push("/dashboard");
+        return;
+      }
     }
-  }, [token, loading, router]);
+  }, [token, loading, router, getUserRole]);
 
-  // Tampilkan loading screen atau null selagi memeriksa token
   if (loading || !token) {
-    return <div>Loading...</div>; // atau komponen skeleton/spinner
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  const userRole = getUserRole();
+  if (!isAdminRole(userRole)) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-lg">Redirecting...</div>
+      </div>
+    );
   }
 
   // Jika token ada, tampilkan layout admin

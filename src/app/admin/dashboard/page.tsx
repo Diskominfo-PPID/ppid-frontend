@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { getRoleDisplayName } from "@/lib/roleUtils";
 import { FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
 
 interface Request {
@@ -13,6 +15,8 @@ interface Request {
 }
 
 export default function DashboardPage() {
+  const { getUserRole } = useAuth();
+  const userRole = getUserRole();
   const [requests, setRequests] = useState<Request[]>([]);
   const [stats, setStats] = useState({
     total: 0,
@@ -63,7 +67,12 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Dashboard Admin PPID</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Dashboard {getRoleDisplayName(userRole)}</h1>
+          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+            {getRoleDisplayName(userRole)}
+          </div>
+        </div>
         
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
