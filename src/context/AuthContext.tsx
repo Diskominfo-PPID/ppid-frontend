@@ -30,15 +30,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (email: string, password: string) => {
     const data = await loginUser(email, password);
     const newToken = data.token;
+    const userRole = data.role || data.user?.role;
     
     setToken(newToken);
     localStorage.setItem("auth_token", newToken);
-    router.push("/admin/dashboard");
+    localStorage.setItem("user_role", userRole);
+    
+    // Redirect based on role
+    if (userRole === "Admin" || userRole === "PPID" || userRole === "Atasan_PPID") {
+      router.push("/admin/dashboard");
+    } else if (userRole === "Pemohon") {
+      router.push("/pemohon/dashboard");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   const logout = () => {
     setToken(null);
     localStorage.removeItem("auth_token");
+    localStorage.removeItem("user_role");
     router.push("/login");
   };
 

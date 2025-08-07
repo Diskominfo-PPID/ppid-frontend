@@ -18,7 +18,15 @@ const Header = () => {
   const { token, logout } = useAuth();
 
   const getDashboardLink = () => {
-    return token ? "/admin/dashboard" : "/login";
+    if (!token) return "/login";
+    
+    const userRole = localStorage.getItem("user_role");
+    if (userRole === "Admin" || userRole === "PPID" || userRole === "Atasan_PPID") {
+      return "/admin/dashboard";
+    } else if (userRole === "Pemohon") {
+      return "/pemohon/dashboard";
+    }
+    return "/dashboard";
   };
 
   return (

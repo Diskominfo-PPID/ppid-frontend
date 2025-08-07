@@ -82,16 +82,18 @@ export const createRequest = async (requestData, token) => {
 };
 
 export const registerUser = async (userData: unknown) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    }
-  );
+  const userDataWithRole = {
+    ...(userData as object),
+    role: "Pemohon",
+  };
+
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userDataWithRole),
+  });
 
   if (!response.ok) {
     const errorData = await response
