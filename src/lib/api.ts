@@ -8,25 +8,43 @@ const apiClient = axios.create({
 });
 
 export const loginUser = async (email: string, password: string) => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ message: "Login gagal" }));
+      
+      if (response.status === 401) {
+        throw new Error("Email atau password salah");
+      }
+      if (response.status === 404) {
+        throw new Error("User tidak ditemukan");
+      }
+      if (response.status >= 500) {
+        throw new Error("Server error, silakan coba lagi");
+      }
+      
+      throw new Error(errorData.message || "Login gagal");
     }
-  );
 
-  if (!response.ok) {
-    const errorData = await response
-      .json()
-      .catch(() => ({ message: "Login failed" }));
-    throw new Error(errorData.message || "Login failed");
+    return await response.json();
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error("Tidak dapat terhubung ke server");
+    }
+    throw error;
   }
-
-  return await response.json();
 };
 
 export const getPublicData = async (endpoint: string) => {

@@ -12,21 +12,19 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!loading) {
       if (!token) {
-        router.replace("/login");
+        router.push("/login");
         return;
       }
 
       const userRole = getUserRole();
       
-      // Redirect berdasarkan role
       if (isAdminRole(userRole)) {
-        router.replace("/admin/dashboard");
+        router.push("/admin/dashboard");
       } else if (isPemohon(userRole)) {
-        router.replace("/pemohon/dashboard");
+        router.push("/pemohon/dashboard");
       } else {
-        // Role tidak dikenali, logout
         localStorage.clear();
-        router.replace("/login");
+        router.push("/login");
       }
     }
   }, [token, loading, router, getUserRole]);

@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Eye, EyeOff, LogIn } from "lucide-react";
+import Toast from "@/components/ui/Toast";
 
 const LoginForm = () => {
   const { login } = useAuth();
@@ -12,24 +13,46 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email.trim() || !password.trim()) {
+      setError("Email dan password harus diisi");
+      setShowToast(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
       await login(email, password);
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan. Silakan coba lagi.";
+      console.error('Login error:', err);
+      const errorMessage = err instanceof Error ? err.message : "Login gagal. Silakan coba lagi.";
       setError(errorMessage);
+      setShowToast(true);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <>
+      {showToast && error && (
+        <Toast
+          message={error}
+          type="error"
+          onClose={() => {
+            setShowToast(false);
+            setError(null);
+          }}
+        />
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
       {/* Tampilkan pesan error jika ada */}
       {error && (
         <div
@@ -50,12 +73,17 @@ const LoginForm = () => {
         <input
           type="email"
           id="email"
-          name="email" // Ganti dari 'username' menjadi 'email'
+          name="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError(null);
+          }}
           required
           disabled={isLoading}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition"
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition ${
+            error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-800'
+          }`}
           placeholder="Masukkan email"
         />
       </div>
@@ -73,10 +101,15 @@ const LoginForm = () => {
             id="password"
             name="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (error) setError(null);
+            }}
             required
             disabled={isLoading}
-            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent transition"
+            className={`w-full px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition ${
+              error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-800'
+            }`}
             placeholder="Masukkan password"
           />
           <button
@@ -142,6 +175,7 @@ const LoginForm = () => {
         </p>
       </div>
     </form>
+    </>
   );
 };
 

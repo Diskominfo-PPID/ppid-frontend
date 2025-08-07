@@ -36,23 +36,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const data = await loginUser(email, password);
-    const newToken = data.token;
-    const userData = data.user || { role: data.role };
-    
-    setToken(newToken);
-    setUser(userData);
-    localStorage.setItem("auth_token", newToken);
-    localStorage.setItem("user_data", JSON.stringify(userData));
-    localStorage.setItem("user_role", userData.role);
-    
-    // Redirect based on role
-    if (isAdminRole(userData.role)) {
-      router.push("/admin/dashboard");
-    } else if (isPemohon(userData.role)) {
-      router.push("/pemohon/dashboard");
-    } else {
-      router.push("/dashboard");
+    try {
+      const data = await loginUser(email, password);
+      const newToken = data.token;
+      
+      if (!newToken) {
+        throw new Error("Token tidak ditemukan dalam response");
+      }
+      
+      // Decode JWT untuk mendapatkan user data
+      const payload = JSON.parse(atob(newToken.split('.')[1]));
+      const finalUserData = {
+        userId: payload.userId,
+        email: payload.email,
+        role: payload.role
+      };
+      
+      setToken(newToken);
+      setUser(finalUserData);
+      localStorage.setItem("auth_token", newToken);
+      localStorage.setItem("user_data", JSON.stringify(finalUserData));
+      localStorage.setItem("user_role", finalUserData.role);
+      
+      // Direct redirect based on role
+      if (isAdminRole(finalUserData.role)) {
+        router.push("/admin/dashboard");
+      } else if (isPemohon(finalUserData.role)) {
+        router.push("/pemohon/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error('AuthContext login error:', error);
+      throw error;
     }
   };
 
