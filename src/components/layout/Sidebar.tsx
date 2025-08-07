@@ -12,7 +12,8 @@ import {
   LogOut,
   BarChart3,
   Globe,
-  AlertTriangle
+  AlertTriangle,
+  User
 } from "lucide-react";
 
 const menuItems = [
@@ -51,6 +52,12 @@ const menuItems = [
     icon: BarChart3,
     label: "Laporan",
     roles: [ROLES.ADMIN, ROLES.ATASAN_PPID]
+  },
+  {
+    href: "/admin/profile",
+    icon: User,
+    label: "Profile",
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/pengaturan",

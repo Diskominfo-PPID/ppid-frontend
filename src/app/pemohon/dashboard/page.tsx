@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle, X } from "lucide-react";
+import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle, X, User } from "lucide-react";
 
 interface Request {
   id: string;
@@ -82,7 +82,10 @@ export default function PemohonDashboardPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Dashboard Pemohon</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Dashboard Pemohon</h1>
+          <p className="text-sm text-gray-600 mt-1">Login sebagai: <span className="font-semibold text-blue-600">Pemohon</span></p>
+        </div>
         <div className="flex gap-4">
           <Link href="/permohonan">
             <button className="flex items-center px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white font-semibold rounded-lg">
@@ -106,6 +109,12 @@ export default function PemohonDashboardPage() {
             <button className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg">
               <FileText className="mr-2 w-5 h-5" />
               Riwayat Permohonan
+            </button>
+          </Link>
+          <Link href="/pemohon/profile">
+            <button className="flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg">
+              <User className="mr-2 w-5 h-5" />
+              Profile
             </button>
           </Link>
         </div>

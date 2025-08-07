@@ -47,6 +47,7 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-800">Dashboard {getRoleDisplayName(userRole)}</h1>
             <p className="text-sm text-gray-500 mt-1">
+              Login sebagai: <span className="font-semibold text-blue-600">{getRoleDisplayName(userRole)}</span> | 
               Update terakhir: {lastUpdate.toLocaleTimeString('id-ID')}
               <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span>
             </p>
