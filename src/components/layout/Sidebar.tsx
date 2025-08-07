@@ -54,6 +54,12 @@ const menuItems = [
     roles: [ROLES.ADMIN, ROLES.ATASAN_PPID]
   },
   {
+    href: "/admin/akun",
+    icon: Users,
+    label: "Kelola Akun",
+    roles: [ROLES.ADMIN]
+  },
+  {
     href: "/admin/profile",
     icon: User,
     label: "Profile",
