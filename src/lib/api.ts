@@ -8,6 +8,48 @@ const apiClient = axios.create({
   },
 });
 
+// Fungsi BARU untuk Registrasi Pengguna
+export const registerUser = async (userData) => {
+  try {
+    const response = await apiClient.post("/auth/register", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Register API error:", error.response?.data || error.message);
+    throw error.response?.data || new Error("Registration failed");
+  }
+};
+
+// ... (fungsi loginUser, getPublicData, getAdminData tetap sama) ...
+export const loginUser = async (email, password) => {
+  try {
+    const response = await apiClient.post("/auth/login", { email, password });
+    return response.data;
+  } catch (error) {
+    console.error("Login API error:", error.response?.data || error.message);
+    throw error.response?.data || new Error("Login failed");
+  }
+};
+
+export const getAdminData = async (endpoint, token) => {
+  if (!token) {
+    throw new Error("No auth token provided");
+  }
+  try {
+    const response = await apiClient.get(endpoint, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Get Admin Data API error:",
+      error.response?.data || error.message
+    );
+    throw error.response?.data || new Error("Failed to fetch admin data");
+  }
+};
+
 /**
  * Fungsi untuk login pengguna.
  * Mengirim email dan password ke endpoint /auth/login.
