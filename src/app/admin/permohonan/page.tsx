@@ -37,23 +37,29 @@ export default function AdminPermohonanPage() {
     const currentPermohonan = permohonan.find(p => p.id === id);
     if (!currentPermohonan) return;
     
-    // Workflow: PPID Utama -> PPID Pelaksana -> Selesai
-    if (currentPermohonan.status === 'Pending') {
-      if (newStatus === 'Diproses') {
-        alert(`Permohonan ${id} diterima PPID Utama dan akan diteruskan ke PPID Pelaksana`);
-      }
-    } else if (currentPermohonan.status === 'Diproses') {
-      if (newStatus === 'Selesai') {
-        alert(`Permohonan ${id} diselesaikan oleh PPID Pelaksana`);
-      } else if (newStatus === 'Ditolak') {
-        alert(`Permohonan ${id} ditolak oleh PPID Pelaksana`);
-      }
+    let confirmMessage = '';
+    let successMessage = '';
+    
+    if (currentPermohonan.status === 'Pending' && newStatus === 'Diproses') {
+      confirmMessage = `Yakin ingin menerima dan meneruskan permohonan REQ${String(id).padStart(3, '0')} ke PPID Pelaksana?`;
+      successMessage = `Permohonan REQ${String(id).padStart(3, '0')} diterima PPID Utama dan diteruskan ke PPID Pelaksana`;
+    } else if (currentPermohonan.status === 'Diproses' && newStatus === 'Selesai') {
+      confirmMessage = `Yakin ingin menyelesaikan permohonan REQ${String(id).padStart(3, '0')}?`;
+      successMessage = `Permohonan REQ${String(id).padStart(3, '0')} berhasil diselesaikan`;
+    } else if (currentPermohonan.status === 'Diproses' && newStatus === 'Ditolak') {
+      confirmMessage = `Yakin ingin menolak permohonan REQ${String(id).padStart(3, '0')}? Tindakan ini tidak dapat dibatalkan.`;
+      successMessage = `Permohonan REQ${String(id).padStart(3, '0')} ditolak`;
+    }
+    
+    if (confirmMessage && confirm(confirmMessage)) {
+      alert(successMessage);
     }
   };
 
   const deletePermohonan = (id: number) => {
-    if (confirm('Yakin ingin menghapus permohonan ini?')) {
-      alert(`Permohonan ${id} dihapus`);
+    const item = permohonan.find(p => p.id === id);
+    if (confirm(`Yakin ingin menghapus permohonan REQ${String(id).padStart(3, '0')} dari "${item?.nama}"? Tindakan ini tidak dapat dibatalkan.`)) {
+      alert(`Permohonan REQ${String(id).padStart(3, '0')} berhasil dihapus`);
     }
   };
 

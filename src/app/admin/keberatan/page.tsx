@@ -47,20 +47,26 @@ export default function AdminKeberatanPage() {
     const currentKeberatan = keberatan.find(k => k.id === id);
     if (!currentKeberatan) return;
     
-    // Workflow: PPID Utama -> PPID Pelaksana -> Selesai
+    let confirmMessage = '';
+    let successMessage = '';
+    
     if (currentKeberatan.tahap === 'PPID Utama' && newStatus === 'Diteruskan') {
-      alert(`Keberatan ${id} diterima PPID Utama dan diteruskan ke PPID Pelaksana`);
-    } else if (currentKeberatan.tahap === 'PPID Pelaksana') {
-      if (newStatus === 'Selesai') {
-        alert(`Keberatan ${id} diselesaikan oleh PPID Pelaksana`);
-      } else if (newStatus === 'Ditolak') {
-        alert(`Keberatan ${id} ditolak oleh PPID Pelaksana`);
-      }
+      confirmMessage = `Yakin ingin meneruskan keberatan KBR${String(id).padStart(3, '0')} ke PPID Pelaksana?`;
+      successMessage = `Keberatan KBR${String(id).padStart(3, '0')} diteruskan ke PPID Pelaksana`;
+    } else if (currentKeberatan.tahap === 'PPID Pelaksana' && newStatus === 'Selesai') {
+      confirmMessage = `Yakin ingin menyelesaikan keberatan KBR${String(id).padStart(3, '0')}?`;
+      successMessage = `Keberatan KBR${String(id).padStart(3, '0')} berhasil diselesaikan`;
+    } else if (currentKeberatan.tahap === 'PPID Pelaksana' && newStatus === 'Ditolak') {
+      confirmMessage = `Yakin ingin menolak keberatan KBR${String(id).padStart(3, '0')}? Tindakan ini tidak dapat dibatalkan.`;
+      successMessage = `Keberatan KBR${String(id).padStart(3, '0')} ditolak`;
     }
     
-    setKeberatan(prev => prev.map(item => 
-      item.id === id ? { ...item, status: newStatus, tahap: newTahap } : item
-    ));
+    if (confirmMessage && confirm(confirmMessage)) {
+      setKeberatan(prev => prev.map(item => 
+        item.id === id ? { ...item, status: newStatus, tahap: newTahap } : item
+      ));
+      alert(successMessage);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -144,7 +150,15 @@ export default function AdminKeberatanPage() {
                     </>
                   )}
                   <RoleGuard requiredRoles={[ROLES.ADMIN]} showAccessDenied={false}>
-                    <button className="text-red-600 hover:text-red-900 text-xs">
+                    <button 
+                      onClick={() => {
+                        if (confirm(`Yakin ingin menghapus keberatan KBR${String(item.id).padStart(3, '0')} dari "${item.nama}"? Tindakan ini tidak dapat dibatalkan.`)) {
+                          setKeberatan(prev => prev.filter(k => k.id !== item.id));
+                          alert(`Keberatan KBR${String(item.id).padStart(3, '0')} berhasil dihapus`);
+                        }
+                      }}
+                      className="text-red-600 hover:text-red-900 text-xs"
+                    >
                       Hapus
                     </button>
                   </RoleGuard>

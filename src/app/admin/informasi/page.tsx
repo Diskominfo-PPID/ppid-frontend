@@ -93,8 +93,10 @@ export default function AdminInformasiPage() {
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Yakin ingin menghapus informasi ini?')) {
+    const item = informasi.find(i => i.id === id);
+    if (confirm(`Yakin ingin menghapus informasi "${item?.judul}"? Tindakan ini tidak dapat dibatalkan.`)) {
       setInformasi(prev => prev.filter(item => item.id !== id));
+      alert('Informasi berhasil dihapus');
     }
   };
 
