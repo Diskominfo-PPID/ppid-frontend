@@ -47,7 +47,11 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-gray-800">Dashboard {getRoleDisplayName(userRole)}</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Login sebagai: <span className="font-semibold text-blue-600">{getRoleDisplayName(userRole)}</span> | 
+              Login sebagai: <span className="font-semibold text-blue-600">
+                {userRole === 'PPID' ? 'PPID Utama' : 
+                 userRole === 'Atasan_PPID' ? 'PPID Pelaksana' : 
+                 getRoleDisplayName(userRole)}
+              </span> | 
               Update terakhir: {lastUpdate.toLocaleTimeString('id-ID')}
               <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span>
             </p>
@@ -62,7 +66,9 @@ export default function DashboardPage() {
               Refresh
             </button>
             <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-              {getRoleDisplayName(userRole)}
+              {userRole === 'PPID' ? 'PPID Utama' : 
+               userRole === 'Atasan_PPID' ? 'PPID Pelaksana' : 
+               getRoleDisplayName(userRole)}
             </div>
           </div>
         </div>

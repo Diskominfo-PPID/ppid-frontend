@@ -81,7 +81,11 @@ const Sidebar = () => {
     <div className="w-64 bg-white shadow-lg">
       <div className="p-6">
         <h2 className="text-xl font-bold text-gray-800">{getRoleDisplayName(userRole)}</h2>
-        <p className="text-sm text-gray-600">Diskominfo Garut</p>
+        <p className="text-sm text-gray-600">
+          {userRole === 'PPID' ? 'PPID Utama' : 
+           userRole === 'Atasan_PPID' ? 'PPID Pelaksana' : 
+           'Administrator'} - Diskominfo Garut
+        </p>
       </div>
       
       <nav className="mt-6">

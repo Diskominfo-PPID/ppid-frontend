@@ -9,18 +9,55 @@ export default function ProfilePage() {
   const { getUserRole } = useAuth();
   const userRole = getUserRole();
   
-  const [profileData, setProfileData] = useState({
-    nama: "Admin PPID",
-    email: "admin@ppid-garut.go.id",
-    telepon: "0262-123456",
-    alamat: "Jl. Pembangunan No. 1, Garut",
-    foto: "/default-avatar.png",
-    nip: "198501012010011001",
-    jabatan: "Administrator PPID"
-  });
+  const getDefaultProfile = () => {
+    switch (userRole) {
+      case 'Admin':
+        return {
+          nama: "Admin PPID",
+          email: "admin@ppid-garut.go.id",
+          telepon: "0262-123456",
+          alamat: "Jl. Pembangunan No. 1, Garut",
+          foto: "/default-avatar.png",
+          nip: "198501012010011001",
+          jabatan: "Administrator PPID"
+        };
+      case 'PPID':
+        return {
+          nama: "PPID Utama",
+          email: "ppid.utama@ppid-garut.go.id",
+          telepon: "0262-123457",
+          alamat: "Jl. Pembangunan No. 1, Garut",
+          foto: "/default-avatar.png",
+          nip: "198502022010012002",
+          jabatan: "Pejabat Pengelola Informasi dan Dokumentasi Utama"
+        };
+      case 'Atasan_PPID':
+        return {
+          nama: "PPID Pelaksana",
+          email: "ppid.pelaksana@ppid-garut.go.id",
+          telepon: "0262-123458",
+          alamat: "Jl. Pembangunan No. 1, Garut",
+          foto: "/default-avatar.png",
+          nip: "198503032010013003",
+          jabatan: "Pejabat Pengelola Informasi dan Dokumentasi Pelaksana"
+        };
+      default:
+        return {
+          nama: "User PPID",
+          email: "user@ppid-garut.go.id",
+          telepon: "0262-123456",
+          alamat: "Jl. Pembangunan No. 1, Garut",
+          foto: "/default-avatar.png",
+          nip: "198501012010011001",
+          jabatan: "Staff PPID"
+        };
+    }
+  };
+  
+  const [profileData, setProfileData] = useState(getDefaultProfile());
   
   const [isEditing, setIsEditing] = useState(false);
-  const [tempData, setTempData] = useState(profileData);
+  const [tempData, setTempData] = useState(getDefaultProfile());
 
   const handleSave = () => {
     setProfileData(tempData);
@@ -32,6 +69,11 @@ export default function ProfilePage() {
     setTempData(profileData);
     setIsEditing(false);
   };
+  
+  // Update tempData when component mounts
+  useState(() => {
+    setTempData(profileData);
+  });
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
