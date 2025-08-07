@@ -10,7 +10,8 @@ import {
   Users, 
   Settings, 
   LogOut,
-  BarChart3
+  BarChart3,
+  Globe
 } from "lucide-react";
 
 const menuItems = [
@@ -30,6 +31,12 @@ const menuItems = [
     href: "/admin/informasi",
     icon: Users,
     label: "Informasi",
+    roles: [ROLES.ADMIN, ROLES.PPID]
+  },
+  {
+    href: "/admin/halaman",
+    icon: Globe,
+    label: "Kelola Halaman",
     roles: [ROLES.ADMIN, ROLES.PPID]
   },
   {
