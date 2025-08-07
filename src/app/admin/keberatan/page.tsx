@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
+import { X } from "lucide-react";
 
 interface Keberatan {
   id: number;
@@ -18,6 +19,7 @@ interface Keberatan {
 
 export default function AdminKeberatanPage() {
   const { userRole } = useRoleAccess();
+  const [selectedKeberatan, setSelectedKeberatan] = useState<Keberatan | null>(null);
   const [keberatan, setKeberatan] = useState<Keberatan[]>([
     {
       id: 1,
@@ -152,6 +154,71 @@ export default function AdminKeberatanPage() {
           </tbody>
         </table>
       </div>
+      
+      {/* Detail Modal */}
+      {selectedKeberatan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Detail Keberatan</h3>
+              <button 
+                onClick={() => setSelectedKeberatan(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">ID Keberatan</label>
+                <p className="text-gray-900">KBR{String(selectedKeberatan.id).padStart(3, '0')}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Nama Pemohon</label>
+                <p className="text-gray-900">{selectedKeberatan.nama}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Email</label>
+                <p className="text-gray-900">{selectedKeberatan.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Permohonan Asal</label>
+                <p className="text-gray-900">{selectedKeberatan.permohonan_asal}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Alasan Keberatan</label>
+                <p className="text-gray-900">{selectedKeberatan.alasan_keberatan}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Status</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedKeberatan.status)}`}>
+                  {selectedKeberatan.status}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tahap</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getTahapColor(selectedKeberatan.tahap)}`}>
+                  {selectedKeberatan.tahap}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tanggal Pengajuan</label>
+                <p className="text-gray-900">{selectedKeberatan.tanggal}</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setSelectedKeberatan(null)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

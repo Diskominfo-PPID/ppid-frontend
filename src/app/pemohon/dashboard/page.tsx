@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle } from "lucide-react";
+import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle, X } from "lucide-react";
 
 interface Request {
   id: string;
@@ -12,6 +12,7 @@ interface Request {
 }
 
 export default function PemohonDashboardPage() {
+  const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
   const [requests] = useState<Request[]>([
     {
       id: "REQ001",
@@ -119,7 +120,10 @@ export default function PemohonDashboardPage() {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.tanggal}</td>
                   <td className="px-6 py-4 text-sm">
-                    <button className="text-blue-600 hover:text-blue-900 text-xs">
+                    <button 
+                      onClick={() => setSelectedRequest(request)}
+                      className="text-blue-600 hover:text-blue-900 text-xs"
+                    >
                       Detail
                     </button>
                   </td>
@@ -129,6 +133,53 @@ export default function PemohonDashboardPage() {
           </table>
         </div>
       </div>
+      
+      {/* Detail Modal */}
+      {selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Detail Permohonan</h3>
+              <button 
+                onClick={() => setSelectedRequest(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm font-medium text-gray-600">ID Permohonan</label>
+                <p className="text-gray-900">{selectedRequest.id}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Informasi Diminta</label>
+                <p className="text-gray-900">{selectedRequest.informasi}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Status</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedRequest.status)}`}>
+                  {selectedRequest.status}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tanggal Pengajuan</label>
+                <p className="text-gray-900">{selectedRequest.tanggal}</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setSelectedRequest(null)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

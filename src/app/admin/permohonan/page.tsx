@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
 import { useRealtimeData } from "@/hooks/useRealtimeData";
+import { X } from "lucide-react";
 
 interface Permohonan {
   id: number;
@@ -18,6 +19,7 @@ interface Permohonan {
 export default function AdminPermohonanPage() {
   const { userRole } = useRoleAccess();
   const { requests: allRequests } = useRealtimeData();
+  const [selectedPermohonan, setSelectedPermohonan] = useState<Permohonan | null>(null);
   
   // Convert realtime data directly without useState
   const permohonan = allRequests.map(req => ({
@@ -124,6 +126,12 @@ export default function AdminPermohonanPage() {
                   ) : (
                     <span className="text-xs text-gray-500">Selesai diproses</span>
                   )}
+                  <button 
+                    onClick={() => setSelectedPermohonan(item)}
+                    className="text-blue-600 hover:text-blue-900 text-xs mr-2"
+                  >
+                    Detail
+                  </button>
                   <RoleGuard requiredRoles={[ROLES.ADMIN]} showAccessDenied={false}>
                     <button 
                       onClick={() => deletePermohonan(item.id)}
@@ -138,6 +146,61 @@ export default function AdminPermohonanPage() {
           </tbody>
         </table>
       </div>
+      
+      {/* Detail Modal */}
+      {selectedPermohonan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Detail Permohonan</h3>
+              <button 
+                onClick={() => setSelectedPermohonan(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">ID Permohonan</label>
+                <p className="text-gray-900">REQ{String(selectedPermohonan.id).padStart(3, '0')}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Nama Pemohon</label>
+                <p className="text-gray-900">{selectedPermohonan.nama}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Email</label>
+                <p className="text-gray-900">{selectedPermohonan.email}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Informasi Diminta</label>
+                <p className="text-gray-900">{selectedPermohonan.informasi}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Status</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedPermohonan.status)}`}>
+                  {selectedPermohonan.status}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tanggal Pengajuan</label>
+                <p className="text-gray-900">{selectedPermohonan.tanggal}</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setSelectedPermohonan(null)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
