@@ -9,38 +9,26 @@ export default function PemohonLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { token, loading, logout } = useAuth();
+  const { token, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!token) {
-        router.push("/login");
-        return;
-      }
-
-      // Simple token validation without jwt-decode
-      try {
-        // Basic token format check
-        if (!token.includes('.')) {
-          logout();
-          router.push("/login?error=invalid_token");
-        }
-      } catch {
-        logout();
-        router.push("/login?error=invalid_token");
-      }
+    if (!loading && !token) {
+      router.push("/login");
     }
-  }, [token, loading, router, logout]);
+  }, [token, loading, router]);
 
   if (loading || !token) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Loading...
+        <div className="text-lg">Loading...</div>
       </div>
     );
   }
 
-  // Jika token valid dan role adalah Pemohon, tampilkan halaman
-  return <main className="p-8">{children}</main>;
+  return (
+    <div className="min-h-screen bg-slate-50">
+      {children}
+    </div>
+  );
 }
