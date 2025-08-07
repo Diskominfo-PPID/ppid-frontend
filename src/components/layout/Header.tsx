@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   BarChart3,
   Home,
@@ -16,6 +18,15 @@ import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
   const { token, logout } = useAuth();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   const getDashboardLink = () => {
     if (!token) return "/login";
@@ -59,14 +70,18 @@ const Header = () => {
 
         {/* Search & Login/Logout */}
         <div className="flex items-center space-x-4">
-          <div className="relative hidden sm:block">
+          <form onSubmit={handleSearch} className="relative hidden sm:block">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari informasi..."
-              className="border rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+              className="border rounded-full py-1.5 px-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          </div>
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Search className="h-4 w-4 text-gray-400 hover:text-blue-800" />
+            </button>
+          </form>
 
           {token ? (
             <>
