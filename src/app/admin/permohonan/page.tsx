@@ -107,31 +107,33 @@ export default function AdminPermohonanPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggal}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                  {item.status === 'Pending' ? (
-                    <button 
-                      onClick={() => updateStatus(item.id, 'Diproses')}
-                      className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
-                    >
-                      Terima & Teruskan
-                    </button>
-                  ) : item.status === 'Diproses' ? (
-                    <div className="flex gap-1">
+                  <RoleGuard requiredRoles={[ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]} showAccessDenied={false}>
+                    {item.status === 'Pending' ? (
                       <button 
-                        onClick={() => updateStatus(item.id, 'Selesai')}
-                        className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+                        onClick={() => updateStatus(item.id, 'Diproses')}
+                        className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
                       >
-                        Selesai
+                        Terima & Teruskan
                       </button>
-                      <button 
-                        onClick={() => updateStatus(item.id, 'Ditolak')}
-                        className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
-                      >
-                        Tolak
-                      </button>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-gray-500">Selesai diproses</span>
-                  )}
+                    ) : item.status === 'Diproses' ? (
+                      <div className="flex gap-1">
+                        <button 
+                          onClick={() => updateStatus(item.id, 'Selesai')}
+                          className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+                        >
+                          Selesai
+                        </button>
+                        <button 
+                          onClick={() => updateStatus(item.id, 'Ditolak')}
+                          className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                        >
+                          Tolak
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-500">Selesai diproses</span>
+                    )}
+                  </RoleGuard>
                   <button 
                     onClick={() => setSelectedPermohonan(item)}
                     className="text-blue-600 hover:text-blue-900 text-xs mr-2"

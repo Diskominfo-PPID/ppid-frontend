@@ -27,7 +27,7 @@ const menuItems = [
     href: "/admin/permohonan",
     icon: FileText,
     label: "Permohonan",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/informasi",
@@ -39,7 +39,7 @@ const menuItems = [
     href: "/admin/keberatan",
     icon: AlertTriangle,
     label: "Keberatan",
-    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/halaman",

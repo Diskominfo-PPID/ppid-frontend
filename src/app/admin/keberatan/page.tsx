@@ -125,30 +125,38 @@ export default function AdminKeberatanPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggal}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                  {item.status === 'Diproses' && item.tahap === 'PPID Utama' && (
-                    <button 
-                      onClick={() => updateStatus(item.id, 'Diteruskan', 'PPID Pelaksana')}
-                      className="text-blue-600 hover:text-blue-900 text-xs"
-                    >
-                      Teruskan
-                    </button>
-                  )}
-                  {item.status === 'Diteruskan' && item.tahap === 'PPID Pelaksana' && (
-                    <>
+                  <RoleGuard requiredRoles={[ROLES.ADMIN, ROLES.PPID, ROLES.PPID_PELAKSANA]} showAccessDenied={false}>
+                    {item.status === 'Diproses' && item.tahap === 'PPID Utama' && (
                       <button 
-                        onClick={() => updateStatus(item.id, 'Selesai', 'Selesai')}
-                        className="text-green-600 hover:text-green-900 text-xs"
+                        onClick={() => updateStatus(item.id, 'Diteruskan', 'PPID Pelaksana')}
+                        className="text-blue-600 hover:text-blue-900 text-xs"
                       >
-                        Selesai
+                        Teruskan
                       </button>
-                      <button 
-                        onClick={() => updateStatus(item.id, 'Ditolak', 'Selesai')}
-                        className="text-red-600 hover:text-red-900 text-xs"
-                      >
-                        Tolak
-                      </button>
-                    </>
-                  )}
+                    )}
+                    {item.status === 'Diteruskan' && item.tahap === 'PPID Pelaksana' && (
+                      <>
+                        <button 
+                          onClick={() => updateStatus(item.id, 'Selesai', 'Selesai')}
+                          className="text-green-600 hover:text-green-900 text-xs"
+                        >
+                          Selesai
+                        </button>
+                        <button 
+                          onClick={() => updateStatus(item.id, 'Ditolak', 'Selesai')}
+                          className="text-red-600 hover:text-red-900 text-xs"
+                        >
+                          Tolak
+                        </button>
+                      </>
+                    )}
+                  </RoleGuard>
+                  <button 
+                    onClick={() => setSelectedKeberatan(item)}
+                    className="text-blue-600 hover:text-blue-900 text-xs mr-2"
+                  >
+                    Detail
+                  </button>
                   <RoleGuard requiredRoles={[ROLES.ADMIN]} showAccessDenied={false}>
                     <button 
                       onClick={() => {
