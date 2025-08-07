@@ -19,21 +19,27 @@ export default function PublicInformationList() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const data = await getPublicData("/informasi"); // Panggil API
-        setInformasi(data);
-      } catch (err) {
-        setError("Gagal memuat data informasi.");
-        console.error(err);
-      } finally {
-        setLoading(false);
+    // Simulate API call with dummy data since backend endpoint doesn't exist
+    const dummyData: Informasi[] = [
+      {
+        id_informasi: 1,
+        judul: "Laporan Keuangan Tahunan 2023",
+        ringkasan_isi_informasi: "Laporan keuangan lengkap Diskominfo Kabupaten Garut tahun 2023",
+        klasifikasi: "Informasi Berkala"
+      },
+      {
+        id_informasi: 2,
+        judul: "Struktur Organisasi PPID",
+        ringkasan_isi_informasi: "Struktur organisasi dan tugas PPID Diskominfo Kabupaten Garut",
+        klasifikasi: "Informasi Setiap Saat"
       }
-    };
-
-    fetchData();
-  }, []); // [] berarti efek ini hanya berjalan sekali saat komponen dimuat
+    ];
+    
+    setTimeout(() => {
+      setInformasi(dummyData);
+      setLoading(false);
+    }, 500);
+  }, []);
 
   if (loading) return <p className="text-center">Memuat informasi...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;

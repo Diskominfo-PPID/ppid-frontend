@@ -1,12 +1,29 @@
-// src/components/layout/Header.tsx
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { BarChart3, Home, Info, LogIn, Scale, Search } from "lucide-react";
+import {
+  BarChart3,
+  Home,
+  Info,
+  LogIn,
+  LogOut,
+  Scale,
+  Search,
+  User,
+} from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
+  const { token, logout } = useAuth();
+
+  const getDashboardLink = () => {
+    return token ? "/admin/dashboard" : "/login";
+  };
+
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+    <header className="sticky top-0 z-50 bg-white shadow-md">
+      <div className="container flex justify-between items-center px-4 py-3 mx-auto">
         {/* Logo & Title */}
         <Link href="/" className="flex items-center space-x-3">
           <Image src="/logo-garut.svg" alt="Logo PPID" width={40} height={40} />
@@ -18,48 +35,62 @@ const Header = () => {
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/"
-            className="flex items-center text-gray-600 hover:text-blue-800 transition-colors"
-          >
+          <Link href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
             <Home className="mr-2 h-4 w-4" /> Beranda
           </Link>
-          <Link
-            href="/profil"
-            className="flex items-center text-gray-600 hover:text-blue-800 transition-colors"
-          >
+          <Link href="/profil" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
             <Info className="mr-2 h-4 w-4" /> Profil PPID
           </Link>
-          <Link
-            href="/permohonan"
-            className="flex items-center text-gray-600 hover:text-blue-800 transition-colors"
-          >
+          <Link href="/permohonan" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
             <Scale className="mr-2 h-4 w-4" /> Permohonan
           </Link>
-          <Link
-            href="/dip"
-            className="flex items-center text-gray-600 hover:text-blue-800 transition-colors"
-          >
+          <Link href="/dip" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
             <BarChart3 className="mr-2 h-4 w-4" /> DIP
           </Link>
         </nav>
 
-        {/* Search & Login */}
+        {/* Search & Login/Logout */}
         <div className="flex items-center space-x-4">
           <div className="relative hidden sm:block">
             <input
               type="text"
               placeholder="Cari informasi..."
-              className="border rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="border rounded-full py-1.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           </div>
-          <Link href="/login">
-            <button className="bg-blue-800 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-full flex items-center transition-colors">
-              <LogIn className="mr-2 h-4 w-4" />
-              Login
-            </button>
-          </Link>
+
+          {token ? (
+            <>
+              <Link href={getDashboardLink()}>
+                <button className="flex items-center px-4 py-2 font-semibold bg-gray-100 rounded-full transition-colors hover:bg-gray-200 text-gray-800">
+                  <User className="mr-2 w-4 h-4" />
+                  Dashboard
+                </button>
+              </Link>
+              <button
+                onClick={logout}
+                className="flex items-center px-4 py-2 font-semibold text-white bg-red-500 rounded-full transition-colors hover:bg-red-600"
+              >
+                <LogOut className="mr-2 w-4 h-4" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/register">
+                <button className="px-4 py-2 font-semibold text-blue-800">
+                  Daftar
+                </button>
+              </Link>
+              <Link href="/login">
+                <button className="flex items-center px-4 py-2 font-semibold text-white rounded-full transition-colors bg-blue-800 hover:bg-blue-600">
+                  <LogIn className="mr-2 w-4 h-4" />
+                  Login
+                </button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
