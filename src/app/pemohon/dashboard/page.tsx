@@ -11,8 +11,18 @@ interface Request {
   tanggal: string;
 }
 
+interface Keberatan {
+  id: string;
+  permohonan_asal: string;
+  alasan_keberatan: string;
+  status: string;
+  tahap: string;
+  tanggal: string;
+}
+
 export default function PemohonDashboardPage() {
   const [selectedRequest, setSelectedRequest] = useState<Request | null>(null);
+  const [selectedKeberatan, setSelectedKeberatan] = useState<Keberatan | null>(null);
   const [requests] = useState<Request[]>([
     {
       id: "REQ001",
@@ -27,6 +37,17 @@ export default function PemohonDashboardPage() {
       tanggal: "2024-01-10"
     }
   ]);
+  
+  const [keberatan] = useState<Keberatan[]>([
+    {
+      id: "KBR001",
+      permohonan_asal: "REQ001",
+      alasan_keberatan: "Informasi yang diberikan tidak lengkap",
+      status: "Diproses",
+      tahap: "PPID Utama",
+      tanggal: "2024-01-15"
+    }
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -34,6 +55,27 @@ export default function PemohonDashboardPage() {
       case "Diproses": return "text-blue-600 bg-blue-100";
       case "Selesai": return "text-green-600 bg-green-100";
       default: return "text-gray-600 bg-gray-100";
+    }
+  };
+  
+  const getTahapColor = (tahap: string) => {
+    switch (tahap) {
+      case 'PPID Utama': return 'bg-purple-100 text-purple-800';
+      case 'PPID Pelaksana': return 'bg-orange-100 text-orange-800';
+      case 'Selesai': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  const handleWithdrawRequest = (id: string) => {
+    if (confirm(`Yakin ingin menarik kembali permohonan ${id}? Tindakan ini tidak dapat dibatalkan.`)) {
+      alert(`Permohonan ${id} berhasil ditarik kembali`);
+    }
+  };
+  
+  const handleWithdrawKeberatan = (id: string) => {
+    if (confirm(`Yakin ingin menarik kembali keberatan ${id}? Tindakan ini tidak dapat dibatalkan.`)) {
+      alert(`Keberatan ${id} berhasil ditarik kembali`);
     }
   };
 
@@ -52,6 +94,18 @@ export default function PemohonDashboardPage() {
             <button className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg">
               <AlertTriangle className="mr-2 w-5 h-5" />
               Ajukan Keberatan
+            </button>
+          </Link>
+          <Link href="/pemohon/keberatan/riwayat">
+            <button className="flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold rounded-lg">
+              <FileText className="mr-2 w-5 h-5" />
+              Riwayat Keberatan
+            </button>
+          </Link>
+          <Link href="/pemohon/permohonan">
+            <button className="flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg">
+              <FileText className="mr-2 w-5 h-5" />
+              Riwayat Permohonan
             </button>
           </Link>
         </div>
@@ -119,13 +173,77 @@ export default function PemohonDashboardPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{request.tanggal}</td>
-                  <td className="px-6 py-4 text-sm">
+                  <td className="px-6 py-4 text-sm space-x-2">
                     <button 
                       onClick={() => setSelectedRequest(request)}
                       className="text-blue-600 hover:text-blue-900 text-xs"
                     >
                       Detail
                     </button>
+                    {(request.status === 'Diproses' || request.status === 'Menunggu') && (
+                      <button 
+                        onClick={() => handleWithdrawRequest(request.id)}
+                        className="text-red-600 hover:text-red-900 text-xs"
+                      >
+                        Tarik
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      {/* Keberatan Section */}
+      <div className="bg-white rounded-lg shadow-md mt-8">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-lg font-semibold text-gray-800">Riwayat Keberatan</h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Permohonan Asal</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tahap</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {keberatan.map((item) => (
+                <tr key={item.id}>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.id}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{item.permohonan_asal}</td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
+                      {item.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getTahapColor(item.tahap)}`}>
+                      {item.tahap}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-500">{item.tanggal}</td>
+                  <td className="px-6 py-4 text-sm space-x-2">
+                    <button 
+                      onClick={() => setSelectedKeberatan(item)}
+                      className="text-blue-600 hover:text-blue-900 text-xs"
+                    >
+                      Detail
+                    </button>
+                    {(item.status === 'Diproses' || item.status === 'Diteruskan') && (
+                      <button 
+                        onClick={() => handleWithdrawKeberatan(item.id)}
+                        className="text-red-600 hover:text-red-900 text-xs"
+                      >
+                        Tarik
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -172,6 +290,63 @@ export default function PemohonDashboardPage() {
             <div className="mt-6 flex justify-end">
               <button 
                 onClick={() => setSelectedRequest(null)}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Detail Keberatan Modal */}
+      {selectedKeberatan && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Detail Keberatan</h3>
+              <button 
+                onClick={() => setSelectedKeberatan(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-600">ID Keberatan</label>
+                <p className="text-gray-900">{selectedKeberatan.id}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Permohonan Asal</label>
+                <p className="text-gray-900">{selectedKeberatan.permohonan_asal}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Alasan Keberatan</label>
+                <p className="text-gray-900">{selectedKeberatan.alasan_keberatan}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Status</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedKeberatan.status)}`}>
+                  {selectedKeberatan.status}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tahap</label>
+                <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${getTahapColor(selectedKeberatan.tahap)}`}>
+                  {selectedKeberatan.tahap}
+                </span>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">Tanggal Pengajuan</label>
+                <p className="text-gray-900">{selectedKeberatan.tanggal}</p>
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setSelectedKeberatan(null)}
                 className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
               >
                 Tutup
