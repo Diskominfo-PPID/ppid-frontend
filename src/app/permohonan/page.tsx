@@ -1,11 +1,71 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn, UserPlus, AlertCircle } from "lucide-react";
 
 export default function PermohonanPage() {
   const { token } = useAuth();
+  const [formData, setFormData] = useState({
+    nama: '',
+    email: '',
+    informasi: ''
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.nama.trim()) {
+      newErrors.nama = 'Nama lengkap wajib diisi';
+    } else if (formData.nama.trim().length < 3) {
+      newErrors.nama = 'Nama minimal 3 karakter';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email wajib diisi';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Format email tidak valid';
+    }
+    
+    if (!formData.informasi.trim()) {
+      newErrors.informasi = 'Informasi yang diminta wajib diisi';
+    } else if (formData.informasi.trim().length < 10) {
+      newErrors.informasi = 'Deskripsi informasi minimal 10 karakter';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Permohonan berhasil dikirim!');
+      setFormData({ nama: '', email: '', informasi: '' });
+      setErrors({});
+    } catch (error) {
+      alert('Gagal mengirim permohonan');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
 
   if (!token) {
     return (
@@ -45,24 +105,74 @@ export default function PermohonanPage() {
       <div className="bg-white rounded-lg shadow-md p-8">
         <h2 className="text-2xl font-semibold mb-6">Ajukan Permohonan Informasi Publik</h2>
         
-        <form className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-            <input type="text" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+            <input 
+              type="text" 
+              value={formData.nama}
+              onChange={(e) => handleChange('nama', e.target.value)}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.nama ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-800'
+              }`}
+              placeholder="Masukkan nama lengkap"
+            />
+            {errors.nama && (
+              <div className="flex items-center mt-1 text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.nama}
+              </div>
+            )}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={(e) => handleChange('email', e.target.value)}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-800'
+              }`}
+              placeholder="contoh@email.com"
+            />
+            {errors.email && (
+              <div className="flex items-center mt-1 text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.email}
+              </div>
+            )}
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Informasi yang Diminta</label>
-            <textarea rows={4} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"></textarea>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Informasi yang Diminta *</label>
+            <textarea 
+              rows={4} 
+              value={formData.informasi}
+              onChange={(e) => handleChange('informasi', e.target.value)}
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                errors.informasi ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-800'
+              }`}
+              placeholder="Jelaskan informasi yang Anda butuhkan secara detail..."
+            />
+            {errors.informasi && (
+              <div className="flex items-center mt-1 text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.informasi}
+              </div>
+            )}
           </div>
           
-          <button type="submit" className="bg-blue-800 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg">
-            Kirim Permohonan
+          <div className="text-sm text-gray-600 mb-4">
+            * Field wajib diisi
+          </div>
+          
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="bg-blue-800 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          >
+            {isSubmitting ? 'Mengirim...' : 'Kirim Permohonan'}
           </button>
         </form>
       </div>
