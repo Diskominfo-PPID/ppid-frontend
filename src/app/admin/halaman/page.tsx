@@ -7,6 +7,7 @@ import RoleGuard from "@/components/auth/RoleGuard";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import FileUpload from "@/components/ui/FileUpload";
 import PagePreview from "@/components/ui/PagePreview";
+import SectionEditor from "@/components/ui/SectionEditor";
 
 interface PageContent {
   id: string;
@@ -14,7 +15,17 @@ interface PageContent {
   slug: string;
   content: string;
   files: FileItem[];
+  sections: Section[];
   lastUpdated: string;
+}
+
+interface Section {
+  id: string;
+  title: string;
+  content: string;
+  type: "text" | "image" | "file" | "hero";
+  order: number;
+  files: any[];
 }
 
 interface FileItem {
@@ -31,16 +42,18 @@ export default function AdminHalamanPage() {
       id: "profil-ppid",
       title: "Profil PPID",
       slug: "profil",
-      content: "<h2>Profil PPID Diskominfo Garut</h2><p>PPID Diskominfo Kabupaten Garut bertugas mengelola informasi publik...</p>",
+      content: "<h2>Profil PPID Diskominfo Garut</h2><p>Pejabat Pengelola Informasi dan Dokumentasi (PPID) Dinas Komunikasi dan Informatika Kabupaten Garut adalah unit kerja yang bertanggung jawab dalam pengelolaan dan pelayanan informasi publik di lingkungan Pemerintah Kabupaten Garut.</p><h3>Visi</h3><p>Mewujudkan pelayanan informasi publik yang transparan, akuntabel, dan berkualitas untuk mendukung tata kelola pemerintahan yang baik.</p><h3>Misi</h3><ul><li>Menyelenggarakan pelayanan informasi publik yang cepat, tepat, dan mudah diakses</li><li>Meningkatkan kualitas pengelolaan informasi dan dokumentasi</li><li>Membangun sistem informasi yang terintegrasi dan terpercaya</li><li>Mendorong partisipasi masyarakat dalam pengawasan penyelenggaraan pemerintahan</li></ul><h3>Tugas dan Fungsi</h3><p>PPID memiliki tugas pokok melaksanakan pengumpulan, pengolahan, penyimpanan, pendokumentasian, penyediaan, dan pelayanan informasi publik sesuai dengan ketentuan peraturan perundang-undangan.</p>",
       files: [],
+      sections: [],
       lastUpdated: "2024-01-15"
     },
     {
       id: "dip",
       title: "Daftar Informasi Publik (DIP)",
       slug: "dip", 
-      content: "<h2>Daftar Informasi Publik</h2><p>Berikut adalah daftar informasi publik yang tersedia...</p>",
+      content: "<h2>Daftar Informasi Publik</h2><p>Daftar Informasi Publik (DIP) adalah katalog yang berisi informasi yang wajib disediakan dan diumumkan secara berkala, informasi yang wajib diumumkan serta merta, dan informasi yang wajib tersedia setiap saat.</p><h3>Informasi Berkala</h3><ul><li>Laporan Keuangan Daerah</li><li>Laporan Kinerja Instansi Pemerintah (LAKIP)</li><li>Rencana Strategis (Renstra)</li><li>Rencana Kerja Tahunan</li><li>Laporan Penyelenggaraan Pemerintahan Daerah (LPPD)</li></ul><h3>Informasi Serta Merta</h3><ul><li>Informasi yang dapat mengancam hajat hidup orang banyak</li><li>Informasi keadaan darurat</li><li>Informasi keselamatan dan keamanan publik</li><li>Informasi yang berkaitan dengan bencana alam</li></ul><h3>Informasi Setiap Saat</h3><ul><li>Struktur Organisasi</li><li>Profil Pejabat</li><li>Peraturan Daerah dan Peraturan Bupati</li><li>Data Statistik Daerah</li><li>Prosedur Pelayanan Publik</li><li>Tarif Pelayanan</li></ul><h3>Informasi Dikecualikan</h3><p>Informasi yang dikecualikan sesuai dengan ketentuan peraturan perundang-undangan meliputi informasi yang dapat menghambat proses penegakan hukum, mengganggu kepentingan perlindungan hak atas kekayaan intelektual, dan membahayakan pertahanan dan keamanan negara.</p>",
       files: [],
+      sections: [],
       lastUpdated: "2024-01-10"
     }
   ]);
@@ -50,7 +63,8 @@ export default function AdminHalamanPage() {
     title: "",
     slug: "",
     content: "",
-    files: [] as FileItem[]
+    files: [] as FileItem[],
+    sections: [] as Section[]
   });
   const [isSaving, setIsSaving] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -62,7 +76,8 @@ export default function AdminHalamanPage() {
         title: page.title,
         slug: page.slug,
         content: page.content,
-        files: page.files
+        files: page.files,
+        sections: page.sections || []
       });
       setSelectedPage(pageId);
       setShowAddForm(false);
@@ -74,7 +89,8 @@ export default function AdminHalamanPage() {
       title: "",
       slug: "",
       content: "",
-      files: []
+      files: [],
+      sections: []
     });
     setSelectedPage(null);
     setShowAddForm(true);
@@ -119,6 +135,14 @@ export default function AdminHalamanPage() {
             ? { ...page, ...formData, lastUpdated: new Date().toISOString().split('T')[0] }
             : page
         ));
+        
+        // Save to localStorage for public pages
+        localStorage.setItem(`page_${selectedPage}`, JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+          files: formData.files,
+          sections: formData.sections
+        }));
       } else {
         // Add new page
         const newPage: PageContent = {
@@ -128,6 +152,14 @@ export default function AdminHalamanPage() {
         };
         setPages(prev => [...prev, newPage]);
         setSelectedPage(newPage.id);
+        
+        // Save to localStorage
+        localStorage.setItem(`page_${newPage.id}`, JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+          files: formData.files,
+          sections: formData.sections
+        }));
       }
       setShowAddForm(false);
       setIsSaving(false);
@@ -176,9 +208,13 @@ export default function AdminHalamanPage() {
                       : 'hover:bg-gray-100'
                   }`}
                 >
-                  <div className="font-medium">{page.title}</div>
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium">{page.title}</div>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Live</span>
+                  </div>
                   <div className="text-sm text-gray-500">/{page.slug}</div>
                   <div className="text-xs text-gray-400">Update: {page.lastUpdated}</div>
+                  <div className="text-xs text-blue-600 mt-1">Halaman aktif - dapat diedit</div>
                 </button>
               ))}
               
@@ -262,14 +298,36 @@ export default function AdminHalamanPage() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium mb-2">Kelola Section</label>
+                  <SectionEditor
+                    sections={formData.sections}
+                    onSectionsChange={(sections) => setFormData({...formData, sections})}
+                  />
+                </div>
+
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-2">Preview URL:</h4>
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                    /{formData.slug || 'url-halaman'}
-                  </code>
+                  <div className="flex items-center gap-2">
+                    <code className="bg-gray-100 px-2 py-1 rounded text-sm">
+                      /{formData.slug || 'url-halaman'}
+                    </code>
+                    {(selectedPage === 'profil-ppid' || selectedPage === 'dip') && (
+                      <a
+                        href={`/${formData.slug}`}
+                        target="_blank"
+                        className="text-blue-600 hover:text-blue-800 text-sm underline"
+                      >
+                        Lihat Halaman Live
+                      </a>
+                    )}
+                  </div>
                   {formData.slug && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Halaman akan dapat diakses di URL ini setelah disimpan
+                      {(selectedPage === 'profil-ppid' || selectedPage === 'dip') 
+                        ? 'Halaman ini sudah live dan dapat diakses publik'
+                        : 'Halaman akan dapat diakses di URL ini setelah disimpan'
+                      }
                     </p>
                   )}
                 </div>
