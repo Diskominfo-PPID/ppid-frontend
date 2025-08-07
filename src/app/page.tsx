@@ -4,6 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import PublicInformationList from "@/components/PublicInformationList";
 import ServiceSection from "@/components/ServiceSection";
 import StatsSection from "@/components/StatsSection";
+import AccessibilityHelper from "@/components/accessibility/AccessibilityHelper";
 
 export default function Home() {
   return (
@@ -30,6 +31,8 @@ export default function Home() {
       </section>
 
       <StatsSection />
+      
+      <AccessibilityHelper />
     </main>
   );
 }

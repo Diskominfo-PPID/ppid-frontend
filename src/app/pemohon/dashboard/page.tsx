@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle, X, User } from "lucide-react";
+import AccessibilityHelper from "@/components/accessibility/AccessibilityHelper";
 
 interface Request {
   id: string;
@@ -364,6 +365,8 @@ export default function PemohonDashboardPage() {
           </div>
         </div>
       )}
+      
+      <AccessibilityHelper />
     </div>
   );
 }
