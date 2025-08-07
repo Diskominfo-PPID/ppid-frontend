@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Mail, Phone, MapPin, Camera, Save, IdCard } from "lucide-react";
+import { User, Mail, Phone, MapPin, Camera, Save, IdCard, Lock, Key } from "lucide-react";
 
 export default function PemohonProfilePage() {
   const [profileData, setProfileData] = useState({
@@ -15,6 +15,12 @@ export default function PemohonProfilePage() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [tempData, setTempData] = useState(profileData);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
   const handleSave = () => {
     setProfileData(tempData);
@@ -25,6 +31,22 @@ export default function PemohonProfilePage() {
   const handleCancel = () => {
     setTempData(profileData);
     setIsEditing(false);
+  };
+  
+  const handlePasswordChange = () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('Password baru dan konfirmasi password tidak sama!');
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      alert('Password minimal 6 karakter!');
+      return;
+    }
+    if (confirm('Yakin ingin mengubah password?')) {
+      alert('Password berhasil diubah!');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setShowPasswordForm(false);
+    }
   };
 
   return (
@@ -190,6 +212,115 @@ export default function PemohonProfilePage() {
           </div>
         </div>
       </div>
+      
+      {/* Security Section */}
+      <div className="bg-white rounded-lg shadow-md p-8 mt-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-6">Keamanan Akun</h2>
+        
+        <div className="space-y-4">
+          <div className="flex justify-between items-center p-4 border rounded-lg">
+            <div className="flex items-center">
+              <Mail className="w-5 h-5 text-gray-500 mr-3" />
+              <div>
+                <p className="font-medium">Email</p>
+                <p className="text-sm text-gray-600">{profileData.email}</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="text-blue-600 hover:text-blue-800 text-sm"
+            >
+              Ubah Email
+            </button>
+          </div>
+          
+          <div className="flex justify-between items-center p-4 border rounded-lg">
+            <div className="flex items-center">
+              <Lock className="w-5 h-5 text-gray-500 mr-3" />
+              <div>
+                <p className="font-medium">Password</p>
+                <p className="text-sm text-gray-600">••••••••</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowPasswordForm(true)}
+              className="text-blue-600 hover:text-blue-800 text-sm"
+            >
+              Ubah Password
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Password Change Modal */}
+      {showPasswordForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold flex items-center">
+                <Key className="w-5 h-5 mr-2" />
+                Ubah Password
+              </h3>
+              <button 
+                onClick={() => setShowPasswordForm(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password Saat Ini</label>
+                <input
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                <input
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password Baru</label>
+                <input
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end gap-2">
+              <button 
+                onClick={() => setShowPasswordForm(false)}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handlePasswordChange}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Ubah Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
