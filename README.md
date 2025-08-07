@@ -5,23 +5,39 @@ Website resmi Pejabat Pengelola Informasi dan Dokumentasi (PPID) Dinas Komunikas
 ## Fitur Utama
 
 ### 🏠 Halaman Publik
-- **Hero Section** - Informasi utama PPID Diskominfo
+- **Hero Section** - Informasi utama PPID Diskominfo dengan customizable content
 - **Layanan PPID** - Permohonan informasi, layanan cepat, pengajuan keberatan, konsultasi
 - **Kategori Informasi** - Informasi berkala, serta merta, setiap saat, dan dikecualikan
-- **Statistik Kinerja** - Data permohonan dan tingkat kepuasan layanan
-- **Footer Informatif** - Kontak, jam layanan, dan link penting
+- **Statistik Kinerja** - Data permohonan dan tingkat kepuasan layanan real-time
+- **Footer Informatif** - Kontak, jam layanan, dan social media links
+- **Accessibility Helper** - Text-to-speech untuk pengguna disabilitas
 
-### 🔐 Panel Admin
-- **Dashboard** - Statistik permohonan dan tabel data terbaru
-- **Manajemen Permohonan** - Kelola permohonan informasi publik
-- **Sistem Login** - Autentikasi admin dengan JWT token
-- **Sidebar Navigation** - Navigasi admin yang responsif
+### 🔐 Panel Admin Multi-Role
+- **Dashboard Real-time** - Statistik permohonan dengan charts dan analytics
+- **Role-Based Access** - Admin, PPID Utama, PPID Pelaksana, Atasan PPID
+- **Bulk Actions** - Aksi massal untuk permohonan dan keberatan
+- **Profile Management** - Kustomisasi profile per role dengan foto
+- **Account Management** - Kelola akun semua role (Admin only)
+
+### 🎨 Website Customization
+- **Branding Control** - Upload logo, favicon, color scheme, fonts
+- **Homepage Editor** - Edit hero section, CTA, dan konten dinamis
+- **Navigation Builder** - Kustomisasi menu dengan dropdown support
+- **Footer Editor** - Edit kontak info dan social media links
+- **Report Generator** - Multiple templates dengan export PDF/Word/Excel
+
+### ♿ Accessibility Features
+- **Text-to-Speech** - Hover untuk membacakan teks (Bahasa Indonesia)
+- **Floating Controls** - Kontrol aksesibilitas yang dapat dinonaktifkan
+- **ARIA Support** - Proper accessibility labels dan keyboard navigation
+- **Visual Indicators** - Clear feedback untuk semua interaksi
 
 ### 📱 Fitur Teknis
 - **Responsive Design** - Tampilan optimal di semua perangkat
-- **API Integration** - Koneksi ke backend dengan error handling
+- **Real-time Data** - Live updates dengan hooks dan context
 - **Loading States** - Indikator loading untuk UX yang baik
 - **TypeScript** - Type safety dan development experience
+- **LocalStorage** - Persistent settings dan customizations
 
 ## Syarat Sistem
 
@@ -67,11 +83,46 @@ Akses [http://localhost:3000](http://localhost:3000)
 3. Pelajari kategori informasi publik
 4. Hubungi kontak yang tersedia untuk permohonan
 
-### Untuk Admin
+### Untuk Admin & Staff
 1. Akses `/login` untuk masuk ke panel admin
-2. Login dengan kredensial yang valid
-3. Kelola permohonan di dashboard admin
-4. Logout melalui sidebar
+2. Login dengan kredensial sesuai role (lihat detail akun di bawah)
+3. Kelola permohonan, keberatan, dan informasi sesuai wewenang
+4. Gunakan bulk actions untuk efisiensi kerja
+5. Kustomisasi tampilan website (Admin only)
+6. Generate laporan dengan berbagai template
+7. Logout melalui sidebar
+
+## Detail Akun Default
+
+### 👑 Administrator
+- **Email**: admin@ppid-garut.go.id
+- **Password**: ppid321
+- **Wewenang**: Full access ke semua fitur
+- **Fitur Khusus**: Kelola akun, kelola tampilan, pengaturan sistem
+
+### 🏢 PPID Utama
+- **Email**: ppid.utama@ppid-garut.go.id
+- **Password**: ppid321
+- **Wewenang**: Menerima dan meneruskan permohonan/keberatan
+- **Fitur Khusus**: Bulk actions, kelola informasi, kelola halaman
+
+### ⚡ PPID Pelaksana
+- **Email**: ppid.pelaksana@ppid-garut.go.id
+- **Password**: ppid321
+- **Wewenang**: Memproses dan menyelesaikan permohonan/keberatan
+- **Fitur Khusus**: Eksekusi final permohonan dan keberatan
+
+### 👁️ Atasan PPID (Monitoring)
+- **Email**: atasan.ppid@ppid-garut.go.id
+- **Password**: ppid321
+- **Wewenang**: Monitoring dan supervisi (read-only)
+- **Fitur Khusus**: Dashboard analytics, laporan, view detail
+
+### 👤 Pemohon
+- **Email**: pemohon@email.com
+- **Password**: ppid321
+- **Wewenang**: Ajukan permohonan, keberatan, lihat riwayat
+- **Fitur Khusus**: Dashboard personal, tarik kembali permohonan
 
 ## Build Production
 
@@ -98,9 +149,13 @@ src/
 
 ## Tech Stack
 
-- **Framework**: Next.js 15
-- **Styling**: Tailwind CSS
+- **Framework**: Next.js 15 dengan App Router
+- **Styling**: Tailwind CSS dengan CSS Variables
 - **Icons**: Lucide React
-- **HTTP Client**: Axios
-- **Language**: TypeScript
-- **Authentication**: JWT Token
+- **HTTP Client**: Axios dengan error handling
+- **Language**: TypeScript dengan strict mode
+- **Authentication**: JWT Token dengan role-based access
+- **State Management**: React Context + Hooks
+- **Accessibility**: Web Speech API untuk text-to-speech
+- **Storage**: LocalStorage untuk preferences
+- **Charts**: Custom chart components untuk analytics
