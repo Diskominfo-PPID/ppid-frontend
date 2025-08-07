@@ -42,6 +42,20 @@ export default function AdminKeberatanPage() {
   ]);
 
   const updateStatus = (id: number, newStatus: string, newTahap: string) => {
+    const currentKeberatan = keberatan.find(k => k.id === id);
+    if (!currentKeberatan) return;
+    
+    // Workflow: PPID Utama -> PPID Pelaksana -> Selesai
+    if (currentKeberatan.tahap === 'PPID Utama' && newStatus === 'Diteruskan') {
+      alert(`Keberatan ${id} diterima PPID Utama dan diteruskan ke PPID Pelaksana`);
+    } else if (currentKeberatan.tahap === 'PPID Pelaksana') {
+      if (newStatus === 'Selesai') {
+        alert(`Keberatan ${id} diselesaikan oleh PPID Pelaksana`);
+      } else if (newStatus === 'Ditolak') {
+        alert(`Keberatan ${id} ditolak oleh PPID Pelaksana`);
+      }
+    }
+    
     setKeberatan(prev => prev.map(item => 
       item.id === id ? { ...item, status: newStatus, tahap: newTahap } : item
     ));

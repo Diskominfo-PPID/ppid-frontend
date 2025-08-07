@@ -51,8 +51,9 @@ export default function PermohonanPage() {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Permohonan berhasil dikirim!');
+      alert('Permohonan berhasil dikirim dan akan diproses oleh PPID Utama terlebih dahulu!');
       setFormData({ nama: '', email: '', informasi: '' });
+      setFiles([]);
       setErrors({});
     } catch (error) {
       alert('Gagal mengirim permohonan');

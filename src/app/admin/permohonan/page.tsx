@@ -32,7 +32,21 @@ export default function AdminPermohonanPage() {
   }));
 
   const updateStatus = (id: number, newStatus: string) => {
-    alert(`Status permohonan ${id} diubah ke ${newStatus}`);
+    const currentPermohonan = permohonan.find(p => p.id === id);
+    if (!currentPermohonan) return;
+    
+    // Workflow: PPID Utama -> PPID Pelaksana -> Selesai
+    if (currentPermohonan.status === 'Pending') {
+      if (newStatus === 'Diproses') {
+        alert(`Permohonan ${id} diterima PPID Utama dan akan diteruskan ke PPID Pelaksana`);
+      }
+    } else if (currentPermohonan.status === 'Diproses') {
+      if (newStatus === 'Selesai') {
+        alert(`Permohonan ${id} diselesaikan oleh PPID Pelaksana`);
+      } else if (newStatus === 'Ditolak') {
+        alert(`Permohonan ${id} ditolak oleh PPID Pelaksana`);
+      }
+    }
   };
 
   const deletePermohonan = (id: number) => {
@@ -85,16 +99,31 @@ export default function AdminPermohonanPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggal}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                  <select 
-                    value={item.status}
-                    onChange={(e) => updateStatus(item.id, e.target.value)}
-                    className="text-xs border rounded px-2 py-1"
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Diproses">Diproses</option>
-                    <option value="Selesai">Selesai</option>
-                    <option value="Ditolak">Ditolak</option>
-                  </select>
+                  {item.status === 'Pending' ? (
+                    <button 
+                      onClick={() => updateStatus(item.id, 'Diproses')}
+                      className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                    >
+                      Terima & Teruskan
+                    </button>
+                  ) : item.status === 'Diproses' ? (
+                    <div className="flex gap-1">
+                      <button 
+                        onClick={() => updateStatus(item.id, 'Selesai')}
+                        className="text-xs bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700"
+                      >
+                        Selesai
+                      </button>
+                      <button 
+                        onClick={() => updateStatus(item.id, 'Ditolak')}
+                        className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                      >
+                        Tolak
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-gray-500">Selesai diproses</span>
+                  )}
                   <RoleGuard requiredRoles={[ROLES.ADMIN]} showAccessDenied={false}>
                     <button 
                       onClick={() => deletePermohonan(item.id)}

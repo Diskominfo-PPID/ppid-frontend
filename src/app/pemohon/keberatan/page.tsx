@@ -53,8 +53,9 @@ export default function KeberatanPage() {
     setIsSubmitting(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Keberatan berhasil diajukan!');
+      alert('Keberatan berhasil diajukan dan akan diproses oleh PPID Utama terlebih dahulu!');
       setFormData({ nama: '', email: '', permohonan_asal: '', alasan_keberatan: '', bukti_pendukung: '' });
+      setFiles([]);
     } catch (error) {
       alert('Gagal mengajukan keberatan');
     } finally {
@@ -88,9 +89,17 @@ export default function KeberatanPage() {
       <div className="bg-white rounded-lg shadow-md p-8">
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mb-4">Ajukan Keberatan Informasi</h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             Jika Anda tidak puas dengan tanggapan atas permohonan informasi, Anda dapat mengajukan keberatan.
           </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 className="font-semibold text-blue-800 mb-2">Proses Keberatan:</h3>
+            <ol className="text-sm text-blue-700 space-y-1">
+              <li>1. Keberatan akan diterima dan diproses oleh PPID Utama</li>
+              <li>2. PPID Utama akan meneruskan ke PPID Pelaksana untuk ditindaklanjuti</li>
+              <li>3. PPID Pelaksana akan memberikan tanggapan akhir</li>
+            </ol>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
