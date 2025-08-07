@@ -151,7 +151,7 @@ export default function DashboardPage() {
         {/* Requests Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">Permohonan Terbaru</h2>
+            <h2 className="text-lg font-semibold text-gray-800">10 Permohonan Terbaru</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -175,7 +175,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {requests.map((request) => (
+                {requests.slice(0, 10).map((request) => (
                   <tr key={request.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {request.nama}

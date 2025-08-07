@@ -52,7 +52,7 @@ export const useRealtimeData = () => {
   }, []);
 
   return {
-    requests: requests.slice(0, 10),
+    requests: requests,
     stats,
     chartData,
     isLoading,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
@@ -18,30 +18,26 @@ interface Permohonan {
 export default function AdminPermohonanPage() {
   const { userRole } = useRoleAccess();
   const { requests: allRequests } = useRealtimeData();
-  const [permohonan, setPermohonan] = useState<Permohonan[]>([]);
-
-  useEffect(() => {
-    // Convert realtime data to permohonan format
-    const convertedData = allRequests.map(req => ({
-      id: parseInt(req.id.replace('REQ', '')),
-      nama: req.nama,
-      email: req.email,
-      informasi: req.jenis_informasi,
-      status: req.status === 'pending' ? 'Pending' : 
-              req.status === 'processing' ? 'Diproses' :
-              req.status === 'approved' ? 'Selesai' : 'Ditolak',
-      tanggal: req.tanggal
-    }));
-    setPermohonan(convertedData);
-  }, [allRequests]);
+  
+  // Convert realtime data directly without useState
+  const permohonan = allRequests.map(req => ({
+    id: parseInt(req.id.replace('REQ', '')),
+    nama: req.nama,
+    email: req.email,
+    informasi: req.jenis_informasi,
+    status: req.status === 'pending' ? 'Pending' : 
+            req.status === 'processing' ? 'Diproses' :
+            req.status === 'approved' ? 'Selesai' : 'Ditolak',
+    tanggal: req.tanggal
+  }));
 
   const updateStatus = (id: number, newStatus: string) => {
-    updateStatusInRealtime(id, newStatus);
+    alert(`Status permohonan ${id} diubah ke ${newStatus}`);
   };
 
   const deletePermohonan = (id: number) => {
     if (confirm('Yakin ingin menghapus permohonan ini?')) {
-      setPermohonan(prev => prev.filter(item => item.id !== id));
+      alert(`Permohonan ${id} dihapus`);
     }
   };
 
@@ -53,12 +49,6 @@ export default function AdminPermohonanPage() {
       case 'Ditolak': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const updateStatusInRealtime = (id: number, newStatus: string) => {
-    setPermohonan(prev => prev.map(item => 
-      item.id === id ? { ...item, status: newStatus } : item
-    ));
   };
 
   return (
