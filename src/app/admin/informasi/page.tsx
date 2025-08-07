@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
+import RichTextEditor from "@/components/ui/RichTextEditor";
+import FileUpload from "@/components/ui/FileUpload";
 
 interface Informasi {
   id: number;
@@ -11,6 +13,16 @@ interface Informasi {
   kategori: string;
   status: string;
   tanggal: string;
+  konten: string;
+  files: FileItem[];
+}
+
+interface FileItem {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  url?: string;
 }
 
 export default function AdminInformasiPage() {
@@ -20,19 +32,29 @@ export default function AdminInformasiPage() {
       judul: "Laporan Keuangan 2023",
       kategori: "Berkala",
       status: "Aktif",
-      tanggal: "2024-01-15"
+      tanggal: "2024-01-15",
+      konten: "<p>Laporan keuangan tahun 2023 telah tersedia untuk diunduh.</p>",
+      files: []
     },
     {
       id: 2,
       judul: "Struktur Organisasi",
       kategori: "Setiap Saat",
       status: "Aktif",
-      tanggal: "2024-01-10"
+      tanggal: "2024-01-10",
+      konten: "<p>Struktur organisasi Diskominfo Kabupaten Garut.</p>",
+      files: []
     }
   ]);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ judul: '', kategori: 'Berkala', status: 'Aktif' });
+  const [formData, setFormData] = useState({ 
+    judul: '', 
+    kategori: 'Berkala', 
+    status: 'Aktif', 
+    konten: '',
+    files: [] as FileItem[]
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,11 +72,17 @@ export default function AdminInformasiPage() {
     }
     setShowForm(false);
     setEditId(null);
-    setFormData({ judul: '', kategori: 'Berkala', status: 'Aktif' });
+    setFormData({ judul: '', kategori: 'Berkala', status: 'Aktif', konten: '', files: [] });
   };
 
   const handleEdit = (item: Informasi) => {
-    setFormData({ judul: item.judul, kategori: item.kategori, status: item.status });
+    setFormData({ 
+      judul: item.judul, 
+      kategori: item.kategori, 
+      status: item.status,
+      konten: item.konten,
+      files: item.files
+    });
     setEditId(item.id);
     setShowForm(true);
   };
@@ -63,6 +91,18 @@ export default function AdminInformasiPage() {
     if (confirm('Yakin ingin menghapus informasi ini?')) {
       setInformasi(prev => prev.filter(item => item.id !== id));
     }
+  };
+
+  const handleFileUpload = (files: FileList) => {
+    const newFiles: FileItem[] = Array.from(files).map(file => ({
+      id: Date.now() + Math.random().toString(),
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file)
+    }));
+    
+    setFormData(prev => ({ ...prev, files: [...prev.files, ...newFiles] }));
   };
 
   return (
@@ -105,13 +145,28 @@ export default function AdminInformasiPage() {
                 <option value="Serta Merta">Serta Merta</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Konten</label>
+              <RichTextEditor
+                value={formData.konten}
+                onChange={(value) => setFormData({...formData, konten: value})}
+                onFileUpload={handleFileUpload}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">File Lampiran</label>
+              <FileUpload
+                files={formData.files}
+                onFilesChange={(files) => setFormData({...formData, files})}
+              />
+            </div>
             <div className="flex space-x-2">
               <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
                 {editId ? 'Update' : 'Simpan'}
               </button>
               <button 
                 type="button" 
-                onClick={() => {setShowForm(false); setEditId(null); setFormData({ judul: '', kategori: 'Berkala', status: 'Aktif' });}}
+                onClick={() => {setShowForm(false); setEditId(null); setFormData({ judul: '', kategori: 'Berkala', status: 'Aktif', konten: '', files: [] });}}
                 className="bg-gray-500 text-white px-4 py-2 rounded"
               >
                 Batal
@@ -129,6 +184,7 @@ export default function AdminInformasiPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Files</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
             </tr>
           </thead>
@@ -143,6 +199,9 @@ export default function AdminInformasiPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.tanggal}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {item.files.length > 0 ? `${item.files.length} file(s)` : 'Tidak ada'}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                   <RoleGuard requiredRoles={[ROLES.ADMIN, ROLES.PPID]} showAccessDenied={false}>
                     <button 
