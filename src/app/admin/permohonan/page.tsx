@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoleAccess } from "@/lib/useRoleAccess";
 import { ROLES } from "@/lib/roleUtils";
 import RoleGuard from "@/components/auth/RoleGuard";
+import { useRealtimeData } from "@/hooks/useRealtimeData";
 
 interface Permohonan {
   id: number;
@@ -16,29 +17,26 @@ interface Permohonan {
 
 export default function AdminPermohonanPage() {
   const { userRole } = useRoleAccess();
-  const [permohonan, setPermohonan] = useState<Permohonan[]>([
-    {
-      id: 1,
-      nama: "John Doe",
-      email: "john@example.com",
-      informasi: "Laporan keuangan 2023",
-      status: "Pending",
-      tanggal: "2024-01-15"
-    },
-    {
-      id: 2,
-      nama: "Jane Smith",
-      email: "jane@example.com",
-      informasi: "Struktur organisasi",
-      status: "Diproses",
-      tanggal: "2024-01-14"
-    }
-  ]);
+  const { requests: allRequests } = useRealtimeData();
+  const [permohonan, setPermohonan] = useState<Permohonan[]>([]);
+
+  useEffect(() => {
+    // Convert realtime data to permohonan format
+    const convertedData = allRequests.map(req => ({
+      id: parseInt(req.id.replace('REQ', '')),
+      nama: req.nama,
+      email: req.email,
+      informasi: req.jenis_informasi,
+      status: req.status === 'pending' ? 'Pending' : 
+              req.status === 'processing' ? 'Diproses' :
+              req.status === 'approved' ? 'Selesai' : 'Ditolak',
+      tanggal: req.tanggal
+    }));
+    setPermohonan(convertedData);
+  }, [allRequests]);
 
   const updateStatus = (id: number, newStatus: string) => {
-    setPermohonan(prev => prev.map(item => 
-      item.id === id ? { ...item, status: newStatus } : item
-    ));
+    updateStatusInRealtime(id, newStatus);
   };
 
   const deletePermohonan = (id: number) => {
@@ -57,9 +55,20 @@ export default function AdminPermohonanPage() {
     }
   };
 
+  const updateStatusInRealtime = (id: number, newStatus: string) => {
+    setPermohonan(prev => prev.map(item => 
+      item.id === id ? { ...item, status: newStatus } : item
+    ));
+  };
+
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Kelola Permohonan</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800">Kelola Permohonan</h1>
+        <div className="text-sm text-gray-500">
+          Total: {permohonan.length} permohonan
+        </div>
+      </div>
       
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <table className="w-full">

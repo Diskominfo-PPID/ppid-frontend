@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getRoleDisplayName } from "@/lib/roleUtils";
-import { FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { FileText, Clock, CheckCircle, AlertCircle, RefreshCw } from "lucide-react";
 import Chart from "@/components/ui/Chart";
+import { useRealtimeData } from "@/hooks/useRealtimeData";
 
 interface Request {
   id: string;
@@ -18,50 +18,25 @@ interface Request {
 export default function DashboardPage() {
   const { getUserRole } = useAuth();
   const userRole = getUserRole();
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    approved: 0,
-    rejected: 0
-  });
-
-  useEffect(() => {
-    // Simulate API call with dummy data
-    const dummyRequests: Request[] = [
-      {
-        id: "1",
-        nama: "John Doe",
-        email: "john@example.com",
-        jenis_informasi: "Informasi Berkala",
-        status: "pending",
-        tanggal: "2024-01-15"
-      },
-      {
-        id: "2",
-        nama: "Jane Smith",
-        email: "jane@example.com",
-        jenis_informasi: "Informasi Setiap Saat",
-        status: "approved",
-        tanggal: "2024-01-14"
-      }
-    ];
-
-    setRequests(dummyRequests);
-    setStats({
-      total: dummyRequests.length,
-      pending: dummyRequests.filter(r => r.status === "pending").length,
-      approved: dummyRequests.filter(r => r.status === "approved").length,
-      rejected: dummyRequests.filter(r => r.status === "rejected").length
-    });
-  }, []);
+  const { requests, stats, chartData, isLoading, lastUpdate, refreshData } = useRealtimeData();
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending": return "text-yellow-600 bg-yellow-100";
+      case "processing": return "text-blue-600 bg-blue-100";
       case "approved": return "text-green-600 bg-green-100";
       case "rejected": return "text-red-600 bg-red-100";
       default: return "text-gray-600 bg-gray-100";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "pending": return "Menunggu";
+      case "processing": return "Diproses";
+      case "approved": return "Disetujui";
+      case "rejected": return "Ditolak";
+      default: return status;
     }
   };
 
@@ -69,14 +44,30 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard {getRoleDisplayName(userRole)}</h1>
-          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            {getRoleDisplayName(userRole)}
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Dashboard {getRoleDisplayName(userRole)}</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Update terakhir: {lastUpdate.toLocaleTimeString('id-ID')}
+              <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-2 animate-pulse"></span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={refreshData}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+            <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+              {getRoleDisplayName(userRole)}
+            </div>
           </div>
         </div>
         
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="flex items-center">
               <FileText className="h-8 w-8 text-blue-600" />
@@ -93,6 +84,16 @@ export default function DashboardPage() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Menunggu</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="flex items-center">
+              <FileText className="h-8 w-8 text-blue-600" />
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-600">Diproses</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.processing}</p>
               </div>
             </div>
           </div>
@@ -123,24 +124,13 @@ export default function DashboardPage() {
           <Chart
             type="bar"
             title="Permohonan per Bulan"
-            data={[
-              { label: "Jan", value: 45, color: "#3B82F6" },
-              { label: "Feb", value: 52, color: "#3B82F6" },
-              { label: "Mar", value: 38, color: "#3B82F6" },
-              { label: "Apr", value: 61, color: "#3B82F6" },
-              { label: "Mei", value: 55, color: "#3B82F6" },
-              { label: "Jun", value: 67, color: "#3B82F6" }
-            ]}
+            data={chartData.monthly}
           />
           
           <Chart
             type="pie"
             title="Status Permohonan"
-            data={[
-              { label: "Disetujui", value: stats.approved || 15, color: "#10B981" },
-              { label: "Menunggu", value: stats.pending || 8, color: "#F59E0B" },
-              { label: "Ditolak", value: stats.rejected || 3, color: "#EF4444" }
-            ]}
+            data={chartData.status}
           />
         </div>
         
@@ -148,26 +138,13 @@ export default function DashboardPage() {
           <Chart
             type="line"
             title="Tren Permohonan Harian"
-            data={[
-              { label: "Sen", value: 12, color: "#8B5CF6" },
-              { label: "Sel", value: 19, color: "#8B5CF6" },
-              { label: "Rab", value: 15, color: "#8B5CF6" },
-              { label: "Kam", value: 22, color: "#8B5CF6" },
-              { label: "Jum", value: 18, color: "#8B5CF6" },
-              { label: "Sab", value: 8, color: "#8B5CF6" },
-              { label: "Min", value: 5, color: "#8B5CF6" }
-            ]}
+            data={chartData.daily}
           />
           
           <Chart
             type="bar"
             title="Kategori Informasi"
-            data={[
-              { label: "Berkala", value: 25, color: "#06B6D4" },
-              { label: "Setiap Saat", value: 18, color: "#06B6D4" },
-              { label: "Serta Merta", value: 12, color: "#06B6D4" },
-              { label: "Dikecualikan", value: 5, color: "#06B6D4" }
-            ]}
+            data={chartData.category}
           />
         </div>
 
@@ -211,7 +188,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(request.status)}`}>
-                        {request.status}
+                        {getStatusLabel(request.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
