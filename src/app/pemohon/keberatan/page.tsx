@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Upload, X } from "lucide-react";
 
 export default function KeberatanPage() {
   const [formData, setFormData] = useState({
@@ -11,16 +11,36 @@ export default function KeberatanPage() {
     alasan_keberatan: '',
     bukti_pendukung: ''
   });
+  const [files, setFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.nama.trim()) newErrors.nama = 'Nama wajib diisi';
-    if (!formData.email.trim()) newErrors.email = 'Email wajib diisi';
-    if (!formData.permohonan_asal.trim()) newErrors.permohonan_asal = 'Nomor permohonan asal wajib diisi';
-    if (!formData.alasan_keberatan.trim()) newErrors.alasan_keberatan = 'Alasan keberatan wajib diisi';
+    if (!formData.nama.trim()) {
+      newErrors.nama = 'Nama wajib diisi';
+    } else if (formData.nama.trim().length < 3) {
+      newErrors.nama = 'Nama minimal 3 karakter';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email wajib diisi';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Format email tidak valid';
+    }
+    
+    if (!formData.permohonan_asal.trim()) {
+      newErrors.permohonan_asal = 'Nomor permohonan asal wajib diisi';
+    } else if (!/^REQ\d{3}$/.test(formData.permohonan_asal)) {
+      newErrors.permohonan_asal = 'Format nomor permohonan tidak valid (contoh: REQ001)';
+    }
+    
+    if (!formData.alasan_keberatan.trim()) {
+      newErrors.alasan_keberatan = 'Alasan keberatan wajib diisi';
+    } else if (formData.alasan_keberatan.trim().length < 20) {
+      newErrors.alasan_keberatan = 'Alasan keberatan minimal 20 karakter';
+    }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -45,6 +65,20 @@ export default function KeberatanPage() {
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+  };
+  
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const validFiles = selectedFiles.filter(file => {
+      const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf' || file.type.includes('document');
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+      return isValidType && isValidSize;
+    });
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+  
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -143,6 +177,42 @@ export default function KeberatanPage() {
               placeholder="Lampirkan bukti atau dokumen pendukung jika ada..."
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
             />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Upload File Pendukung</label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf,.doc,.docx"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="file-upload"
+              />
+              <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
+                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-600">Klik untuk upload file</span>
+                <span className="text-xs text-gray-400">Gambar, PDF, DOC (Max 5MB)</span>
+              </label>
+            </div>
+            
+            {files.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm text-gray-700">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <button 

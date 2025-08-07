@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import { LogIn, UserPlus, AlertCircle } from "lucide-react";
+import { LogIn, UserPlus, AlertCircle, Upload, X } from "lucide-react";
 
 export default function PermohonanPage() {
   const { token } = useAuth();
@@ -12,6 +12,7 @@ export default function PermohonanPage() {
     email: '',
     informasi: ''
   });
+  const [files, setFiles] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -65,6 +66,20 @@ export default function PermohonanPage() {
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+  
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || []);
+    const validFiles = selectedFiles.filter(file => {
+      const isValidType = file.type.startsWith('image/') || file.type === 'application/pdf' || file.type.includes('document');
+      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+      return isValidType && isValidSize;
+    });
+    setFiles(prev => [...prev, ...validFiles]);
+  };
+  
+  const removeFile = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   if (!token) {
@@ -159,6 +174,42 @@ export default function PermohonanPage() {
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
                 {errors.informasi}
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Upload File Pendukung</label>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+              <input
+                type="file"
+                multiple
+                accept="image/*,.pdf,.doc,.docx"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="file-upload-permohonan"
+              />
+              <label htmlFor="file-upload-permohonan" className="cursor-pointer flex flex-col items-center">
+                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-600">Klik untuk upload file</span>
+                <span className="text-xs text-gray-400">Gambar, PDF, DOC (Max 5MB)</span>
+              </label>
+            </div>
+            
+            {files.length > 0 && (
+              <div className="mt-4 space-y-2">
+                {files.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span className="text-sm text-gray-700">{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
