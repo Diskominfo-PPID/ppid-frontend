@@ -34,12 +34,26 @@ export const useRealtimeData = () => {
     rejected: requests.filter(r => r.status === 'rejected').length
   };
 
-  const chartData = {
-    monthly: generateMonthlyData(requests),
-    daily: generateDailyData(requests),
-    category: generateCategoryData(),
-    status: generateStatusData(requests)
-  };
+  const [chartData, setChartData] = useState({
+    monthly: [],
+    daily: [],
+    category: [],
+    status: []
+  });
+  
+  useEffect(() => {
+    const newChartData = {
+      monthly: generateMonthlyData(requests),
+      daily: generateDailyData(requests),
+      category: generateCategoryData(),
+      status: generateStatusData(requests)
+    };
+    
+    // Only update if data actually changed
+    if (JSON.stringify(newChartData) !== JSON.stringify(chartData)) {
+      setChartData(newChartData);
+    }
+  }, [requests, chartData]);
 
   const refreshData = useCallback(() => {
     setIsLoading(true);

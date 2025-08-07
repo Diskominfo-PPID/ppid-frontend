@@ -39,33 +39,42 @@ export const generateDummyRequests = (count: number = 50): RequestData[] => {
 // Generate monthly data from actual requests
 export const generateMonthlyData = (requests: RequestData[]) => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'];
-  const currentMonth = new Date().getMonth();
+  const currentDate = new Date();
   
   return months.map((month, index) => {
-    // Calculate based on actual data distribution
-    const baseValue = Math.floor(requests.length / 6);
-    const variation = index <= currentMonth ? Math.floor(requests.length * 0.1) : 0;
+    // Count actual requests for each month
+    const monthRequests = requests.filter(req => {
+      const reqDate = new Date(req.tanggal);
+      return reqDate.getMonth() === index;
+    });
+    
     return {
       label: month,
-      value: baseValue + variation,
+      value: monthRequests.length,
       color: '#3B82F6'
     };
   });
 };
 
-// Generate daily data from actual requests
+// Generate daily data from actual requests (last 7 days)
 export const generateDailyData = (requests: RequestData[]) => {
   const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-  const totalRequests = requests.length;
+  const today = new Date();
   
   return days.map((day, index) => {
-    // Weekdays have more requests than weekends
-    const isWeekend = index >= 5;
-    const baseValue = Math.floor(totalRequests / 7);
-    const multiplier = isWeekend ? 0.3 : 1;
+    // Get date for last 7 days
+    const targetDate = new Date(today);
+    targetDate.setDate(today.getDate() - (6 - index));
+    
+    // Count requests for this specific day
+    const dayRequests = requests.filter(req => {
+      const reqDate = new Date(req.tanggal);
+      return reqDate.toDateString() === targetDate.toDateString();
+    });
+    
     return {
       label: day,
-      value: Math.floor(baseValue * multiplier) + 1,
+      value: dayRequests.length,
       color: '#8B5CF6'
     };
   });

@@ -19,8 +19,13 @@ const Chart = ({ data, type, title, height = 300 }: ChartProps) => {
   const [animatedData, setAnimatedData] = useState<ChartData[]>([]);
 
   useEffect(() => {
-    setTimeout(() => setAnimatedData(data), 100);
-  }, [data]);
+    const dataString = JSON.stringify(data);
+    const currentDataString = JSON.stringify(animatedData);
+    
+    if (dataString !== currentDataString) {
+      setTimeout(() => setAnimatedData(data), 100);
+    }
+  }, [data, animatedData]);
 
   const maxValue = Math.max(...data.map(d => d.value));
 
@@ -48,8 +53,8 @@ const Chart = ({ data, type, title, height = 300 }: ChartProps) => {
 
   const LineChart = () => {
     const points = animatedData.map((item, index) => ({
-      x: (index / (animatedData.length - 1)) * 100,
-      y: 100 - (item.value / maxValue) * 80
+      x: 10 + (index / (animatedData.length - 1)) * 80,
+      y: 20 + (1 - (item.value / (maxValue || 1))) * 60
     }));
 
     const pathData = points.reduce((path, point, index) => {
@@ -58,12 +63,12 @@ const Chart = ({ data, type, title, height = 300 }: ChartProps) => {
 
     return (
       <div className="relative h-full">
-        <svg className="w-full h-full" viewBox="0 0 100 100">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
           <path
             d={pathData}
             fill="none"
             stroke="#3B82F6"
-            strokeWidth="2"
+            strokeWidth="1"
             className="transition-all duration-1000"
           />
           {points.map((point, index) => (
@@ -71,15 +76,15 @@ const Chart = ({ data, type, title, height = 300 }: ChartProps) => {
               key={index}
               cx={point.x}
               cy={point.y}
-              r="3"
+              r="1.5"
               fill="#3B82F6"
               className="transition-all duration-1000"
             />
           ))}
         </svg>
-        <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600">
+        <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600 px-2">
           {animatedData.map((item, index) => (
-            <span key={index}>{item.label}</span>
+            <span key={index} className="text-center">{item.label}</span>
           ))}
         </div>
       </div>
