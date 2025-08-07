@@ -1,7 +1,20 @@
 // src/components/HeroSection.tsx
+"use client";
+
 import { ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const HeroSection = () => {
+  const router = useRouter();
+
+  const handlePermohonan = () => {
+    router.push('/permohonan');
+  };
+
+  const handleDIP = () => {
+    router.push('/dip');
+  };
+
   return (
     <section className="bg-gradient-to-r from-blue-800 to-blue-600 text-white">
       <div className="container mx-auto px-4 py-16 text-center">
@@ -19,11 +32,17 @@ const HeroSection = () => {
           UU No. 14 Tahun 2008 tentang Keterbukaan Informasi Publik
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <button className="bg-white text-blue-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all flex items-center justify-center">
+          <button 
+            onClick={handlePermohonan}
+            className="bg-white text-blue-800 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-all flex items-center justify-center"
+          >
             <ArrowRight className="mr-2 h-5 w-5" />
             Ajukan Permohonan
           </button>
-          <button className="border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:text-blue-800 transition-all">
+          <button 
+            onClick={handleDIP}
+            className="border-2 border-white text-white font-semibold py-3 px-6 rounded-lg hover:bg-white hover:text-blue-800 transition-all"
+          >
             Lihat DIP
           </button>
         </div>

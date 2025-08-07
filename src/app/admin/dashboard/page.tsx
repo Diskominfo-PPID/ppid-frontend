@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { getRoleDisplayName } from "@/lib/roleUtils";
 import { FileText, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import Chart from "@/components/ui/Chart";
 
 interface Request {
   id: string;
@@ -115,6 +116,59 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Chart
+            type="bar"
+            title="Permohonan per Bulan"
+            data={[
+              { label: "Jan", value: 45, color: "#3B82F6" },
+              { label: "Feb", value: 52, color: "#3B82F6" },
+              { label: "Mar", value: 38, color: "#3B82F6" },
+              { label: "Apr", value: 61, color: "#3B82F6" },
+              { label: "Mei", value: 55, color: "#3B82F6" },
+              { label: "Jun", value: 67, color: "#3B82F6" }
+            ]}
+          />
+          
+          <Chart
+            type="pie"
+            title="Status Permohonan"
+            data={[
+              { label: "Disetujui", value: stats.approved || 15, color: "#10B981" },
+              { label: "Menunggu", value: stats.pending || 8, color: "#F59E0B" },
+              { label: "Ditolak", value: stats.rejected || 3, color: "#EF4444" }
+            ]}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Chart
+            type="line"
+            title="Tren Permohonan Harian"
+            data={[
+              { label: "Sen", value: 12, color: "#8B5CF6" },
+              { label: "Sel", value: 19, color: "#8B5CF6" },
+              { label: "Rab", value: 15, color: "#8B5CF6" },
+              { label: "Kam", value: 22, color: "#8B5CF6" },
+              { label: "Jum", value: 18, color: "#8B5CF6" },
+              { label: "Sab", value: 8, color: "#8B5CF6" },
+              { label: "Min", value: 5, color: "#8B5CF6" }
+            ]}
+          />
+          
+          <Chart
+            type="bar"
+            title="Kategori Informasi"
+            data={[
+              { label: "Berkala", value: 25, color: "#06B6D4" },
+              { label: "Setiap Saat", value: 18, color: "#06B6D4" },
+              { label: "Serta Merta", value: 12, color: "#06B6D4" },
+              { label: "Dikecualikan", value: 5, color: "#06B6D4" }
+            ]}
+          />
         </div>
 
         {/* Requests Table */}

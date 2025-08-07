@@ -48,35 +48,90 @@ export default function AdminHalamanPage() {
   const [selectedPage, setSelectedPage] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
     content: "",
     files: [] as FileItem[]
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const handlePageSelect = (pageId: string) => {
     const page = pages.find(p => p.id === pageId);
     if (page) {
       setFormData({
         title: page.title,
+        slug: page.slug,
         content: page.content,
         files: page.files
       });
       setSelectedPage(pageId);
+      setShowAddForm(false);
     }
   };
 
+  const handleAddPage = () => {
+    setFormData({
+      title: "",
+      slug: "",
+      content: "",
+      files: []
+    });
+    setSelectedPage(null);
+    setShowAddForm(true);
+  };
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
+  const handleTitleChange = (title: string) => {
+    setFormData(prev => ({
+      ...prev,
+      title,
+      slug: prev.slug || generateSlug(title)
+    }));
+  };
+
   const handleSave = async () => {
-    if (!selectedPage) return;
+    if (!formData.title || !formData.slug) {
+      alert('Judul dan slug harus diisi!');
+      return;
+    }
+    
+    // Check slug uniqueness
+    const existingPage = pages.find(p => p.slug === formData.slug && p.id !== selectedPage);
+    if (existingPage) {
+      alert('Slug sudah digunakan, gunakan slug lain!');
+      return;
+    }
     
     setIsSaving(true);
     setTimeout(() => {
-      setPages(prev => prev.map(page => 
-        page.id === selectedPage 
-          ? { ...page, ...formData, lastUpdated: new Date().toISOString().split('T')[0] }
-          : page
-      ));
+      if (selectedPage) {
+        // Update existing page
+        setPages(prev => prev.map(page => 
+          page.id === selectedPage 
+            ? { ...page, ...formData, lastUpdated: new Date().toISOString().split('T')[0] }
+            : page
+        ));
+      } else {
+        // Add new page
+        const newPage: PageContent = {
+          id: Date.now().toString(),
+          ...formData,
+          lastUpdated: new Date().toISOString().split('T')[0]
+        };
+        setPages(prev => [...prev, newPage]);
+        setSelectedPage(newPage.id);
+      }
+      setShowAddForm(false);
       setIsSaving(false);
-      alert('Halaman berhasil disimpan!');
+      alert(selectedPage ? 'Halaman berhasil diperbarui!' : 'Halaman baru berhasil ditambahkan!');
     }, 1000);
   };
 
@@ -99,14 +154,24 @@ export default function AdminHalamanPage() {
       <div className="grid lg:grid-cols-4 gap-8">
         <div className="lg:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Pilih Halaman</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Pilih Halaman</h3>
+              <RoleGuard requiredRoles={[ROLES.ADMIN, ROLES.PPID]} showAccessDenied={false}>
+                <button
+                  onClick={handleAddPage}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  + Tambah
+                </button>
+              </RoleGuard>
+            </div>
             <div className="space-y-2">
               {pages.map((page) => (
                 <button
                   key={page.id}
                   onClick={() => handlePageSelect(page.id)}
                   className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    selectedPage === page.id 
+                    selectedPage === page.id && !showAddForm
                       ? 'bg-blue-100 text-blue-800 border border-blue-300' 
                       : 'hover:bg-gray-100'
                   }`}
@@ -116,15 +181,24 @@ export default function AdminHalamanPage() {
                   <div className="text-xs text-gray-400">Update: {page.lastUpdated}</div>
                 </button>
               ))}
+              
+              {showAddForm && (
+                <div className="p-3 rounded-lg bg-green-100 border border-green-300">
+                  <div className="font-medium text-green-800">Halaman Baru</div>
+                  <div className="text-sm text-green-600">Sedang membuat...</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className="lg:col-span-3">
-          {selectedPage ? (
+          {selectedPage || showAddForm ? (
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">Edit: {formData.title}</h2>
+                <h2 className="text-xl font-bold">
+                  {showAddForm ? 'Tambah Halaman Baru' : `Edit: ${formData.title}`}
+                </h2>
                 <div className="flex gap-3">
                   <PagePreview
                     title={formData.title}
@@ -137,7 +211,7 @@ export default function AdminHalamanPage() {
                       disabled={isSaving}
                       className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white px-4 py-2 rounded-lg"
                     >
-                      {isSaving ? 'Menyimpan...' : 'Simpan Halaman'}
+                      {isSaving ? 'Menyimpan...' : (showAddForm ? 'Buat Halaman' : 'Simpan Halaman')}
                     </button>
                   </RoleGuard>
                 </div>
@@ -149,10 +223,26 @@ export default function AdminHalamanPage() {
                   <input
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    onChange={(e) => handleTitleChange(e.target.value)}
                     className="w-full border rounded-lg px-3 py-2"
                     placeholder="Masukkan judul halaman"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Slug URL</label>
+                  <div className="flex items-center">
+                    <span className="text-gray-500 text-sm mr-2">/</span>
+                    <input
+                      type="text"
+                      value={formData.slug}
+                      onChange={(e) => setFormData({...formData, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '')})}
+                      className="flex-1 border rounded-lg px-3 py-2"
+                      placeholder="url-halaman"
+                      pattern="[a-z0-9-]+"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Hanya huruf kecil, angka, dan tanda hubung</p>
                 </div>
 
                 <div>
@@ -175,8 +265,13 @@ export default function AdminHalamanPage() {
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-2">Preview URL:</h4>
                   <code className="bg-gray-100 px-2 py-1 rounded text-sm">
-                    /{pages.find(p => p.id === selectedPage)?.slug}
+                    /{formData.slug || 'url-halaman'}
                   </code>
+                  {formData.slug && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Halaman akan dapat diakses di URL ini setelah disimpan
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
