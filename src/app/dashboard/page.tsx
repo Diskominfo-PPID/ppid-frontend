@@ -1,31 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { getAdminData } from "@/lib/api"; // Kita bisa gunakan kembali fungsi ini
+import { useState } from "react";
 import Link from "next/link";
 import { PlusCircle } from "lucide-react";
 
-export default function PemohonDashboardPage() {
-  const [requests, setRequests] = useState([]);
-  const { token } = useAuth();
+interface Request {
+  no_pendaftaran: string;
+  rincian_informasi_diminta: string;
+  tanggal: string;
+  status_permohonan: string;
+}
 
-  useEffect(() => {
-    // Di masa depan, endpoint ini bisa dibuat khusus untuk pemohon
-    // Untuk saat ini, kita asumsikan admin bisa melihat semua
-    if (token) {
-      const fetchMyRequests = async () => {
-        try {
-          // Anda perlu membuat endpoint baru di backend: GET /api/permintaan/saya
-          // const data = await getAdminData('/permintaan/saya', token);
-          // setRequests(data);
-        } catch (error) {
-          console.error("Gagal mengambil data permohonan:", error);
-        }
-      };
-      // fetchMyRequests();
-    }
-  }, [token]);
+export default function PemohonDashboardPage() {
+  const [requests] = useState<Request[]>([]);
 
   return (
     <div>
@@ -57,7 +44,7 @@ export default function PemohonDashboardPage() {
             </thead>
             {/* Body Tabel */}
             <tbody>
-              {requests.map((req: any) => (
+              {requests.map((req) => (
                 <tr key={req.no_pendaftaran} className="border-b">
                   <td className="p-3 font-mono text-sm">
                     {req.no_pendaftaran}

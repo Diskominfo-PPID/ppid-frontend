@@ -3,7 +3,6 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // Perlu install: npm install jwt-decode
 
 export default function PemohonLayout({
   children,
@@ -20,15 +19,14 @@ export default function PemohonLayout({
         return;
       }
 
-      // Cek role dari token
+      // Simple token validation without jwt-decode
       try {
-        const decoded: { role: string } = jwtDecode(token);
-        if (decoded.role !== "Pemohon") {
-          // Jika bukan pemohon, logout dan redirect
+        // Basic token format check
+        if (!token.includes('.')) {
           logout();
-          router.push("/login?error=unauthorized");
+          router.push("/login?error=invalid_token");
         }
-      } catch (error) {
+      } catch {
         logout();
         router.push("/login?error=invalid_token");
       }

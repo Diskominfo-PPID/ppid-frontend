@@ -37,17 +37,18 @@ export default function RegisterPage() {
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (err: any) {
-      setError(err.error || "Terjadi kesalahan saat registrasi.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan saat registrasi.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-light-bg">
+    <div className="flex justify-center items-center min-h-screen bg-slate-50">
       <div className="p-8 space-y-6 w-full max-w-lg bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-dark-text">
+        <h1 className="text-2xl font-bold text-center text-gray-800">
           Daftar Akun Pemohon
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -125,7 +126,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary hover:bg-secondary text-white font-semibold py-2.5 px-4 rounded-lg transition-colors disabled:bg-blue-300"
+            className="w-full bg-blue-800 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-colors disabled:bg-blue-300"
           >
             {isLoading ? "Mendaftar..." : "Daftar"}
           </button>
@@ -134,7 +135,7 @@ export default function RegisterPage() {
           Sudah punya akun?{" "}
           <Link
             href="/login"
-            className="font-medium text-primary hover:underline"
+            className="font-medium text-blue-800 hover:underline"
           >
             Login di sini
           </Link>
