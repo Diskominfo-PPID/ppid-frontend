@@ -11,7 +11,8 @@ import {
   Settings, 
   LogOut,
   BarChart3,
-  Globe
+  Globe,
+  AlertTriangle
 } from "lucide-react";
 
 const menuItems = [
@@ -32,6 +33,12 @@ const menuItems = [
     icon: Users,
     label: "Informasi",
     roles: [ROLES.ADMIN, ROLES.PPID]
+  },
+  {
+    href: "/admin/keberatan",
+    icon: AlertTriangle,
+    label: "Keberatan",
+    roles: [ROLES.ADMIN, ROLES.PPID, ROLES.ATASAN_PPID]
   },
   {
     href: "/admin/halaman",

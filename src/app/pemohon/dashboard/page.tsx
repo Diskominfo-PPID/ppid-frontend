@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PlusCircle, FileText, Clock, CheckCircle } from "lucide-react";
+import { PlusCircle, FileText, Clock, CheckCircle, AlertTriangle } from "lucide-react";
 
 interface Request {
   id: string;
@@ -40,12 +40,20 @@ export default function PemohonDashboardPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800">Dashboard Pemohon</h1>
-        <Link href="/permohonan">
-          <button className="flex items-center px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white font-semibold rounded-lg">
-            <PlusCircle className="mr-2 w-5 h-5" />
-            Ajukan Permohonan
-          </button>
-        </Link>
+        <div className="flex gap-4">
+          <Link href="/permohonan">
+            <button className="flex items-center px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white font-semibold rounded-lg">
+              <PlusCircle className="mr-2 w-5 h-5" />
+              Ajukan Permohonan
+            </button>
+          </Link>
+          <Link href="/pemohon/keberatan">
+            <button className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg">
+              <AlertTriangle className="mr-2 w-5 h-5" />
+              Ajukan Keberatan
+            </button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
