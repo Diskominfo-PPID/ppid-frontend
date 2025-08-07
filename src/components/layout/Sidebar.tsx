@@ -18,22 +18,22 @@ const menuItems = [
     label: "Dashboard"
   },
   {
-    href: "/admin/requests",
+    href: "/admin/permohonan",
     icon: FileText,
     label: "Permohonan"
   },
   {
-    href: "/admin/users",
+    href: "/admin/informasi",
     icon: Users,
-    label: "Pengguna"
+    label: "Informasi"
   },
   {
-    href: "/admin/reports",
+    href: "/admin/laporan",
     icon: BarChart3,
     label: "Laporan"
   },
   {
-    href: "/admin/settings",
+    href: "/admin/pengaturan",
     icon: Settings,
     label: "Pengaturan"
   }
