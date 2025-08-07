@@ -88,9 +88,26 @@ export default function AdminPermohonanPage() {
       return;
     }
     
-    const confirmMessage = `Yakin ingin ${action} ${selectedIds.length} permohonan yang dipilih?`;
+    let confirmMessage = '';
+    let successMessage = '';
+    
+    switch (action) {
+      case 'terima':
+        confirmMessage = `Yakin ingin menerima ${selectedIds.length} permohonan yang dipilih?`;
+        successMessage = `${selectedIds.length} permohonan berhasil diterima`;
+        break;
+      case 'tolak':
+        confirmMessage = `Yakin ingin menolak ${selectedIds.length} permohonan yang dipilih?`;
+        successMessage = `${selectedIds.length} permohonan berhasil ditolak`;
+        break;
+      case 'hapus':
+        confirmMessage = `Yakin ingin menghapus ${selectedIds.length} permohonan yang dipilih? Tindakan ini tidak dapat dibatalkan.`;
+        successMessage = `${selectedIds.length} permohonan berhasil dihapus`;
+        break;
+    }
+    
     if (confirm(confirmMessage)) {
-      alert(`${selectedIds.length} permohonan berhasil di${action}`);
+      alert(successMessage);
       setSelectedIds([]);
       setSelectAll(false);
     }
@@ -136,6 +153,14 @@ export default function AdminPermohonanPage() {
                 >
                   Tolak Semua
                 </button>
+                <RoleGuard requiredRoles={[ROLES.ADMIN]} showAccessDenied={false}>
+                  <button
+                    onClick={() => handleBulkAction('hapus')}
+                    className="px-3 py-1 bg-red-800 text-white text-sm rounded hover:bg-red-900"
+                  >
+                    Hapus Semua
+                  </button>
+                </RoleGuard>
                 <button
                   onClick={() => {setSelectedIds([]); setSelectAll(false);}}
                   className="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600"
